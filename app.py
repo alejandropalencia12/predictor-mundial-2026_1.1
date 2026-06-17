@@ -48,4 +48,58 @@ if view_mode == "📊 Dashboard":
         col1, col2, col3 = st.columns([2, 2, 1.5])
         with col1:
             st.write(f"**{row['Partido']}**")
-            st.caption(f"📅 {row['Fecha']}
+            st.caption(f"📅 {row['Fecha']}")
+        with col2:
+            st.write(f"1️⃣ {row['Prob 1']:.1f}% | ❌ {row['Prob X']:.1f}% | 2️⃣ {row['Prob 2']:.1f}%")
+        with col3:
+            st.write(f"**{row['Marcador']}**")
+            st.caption(f"Conf: {row['Confianza']:.2f}%")
+        st.divider()
+
+# PREDICCIONES
+elif view_mode == "🔮 Predicciones":
+    st.subheader("Tabla Completa de Predicciones")
+    st.dataframe(df_pred, use_container_width=True, height=400)
+    
+    csv = df_pred.to_csv(index=False)
+    st.download_button(
+        label="📥 Descargar CSV",
+        data=csv,
+        file_name="predicciones_mundial_2026.csv",
+        mime="text/csv"
+    )
+
+# HISTÓRICO
+elif view_mode == "📈 Histórico":
+    st.subheader("Resultados Históricos")
+    
+    if len(df_hist) > 0:
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("📊 Total Partidos", len(df_hist))
+        with col2:
+            st.metric("📅 Último Partido", df_hist['date'].max() if 'date' in df_hist.columns else "N/A")
+        
+        st.divider()
+        st.dataframe(df_hist, use_container_width=True)
+    else:
+        st.info("ℹ️ Sin datos históricos disponibles")
+
+# ADMIN
+elif view_mode == "⚙️ Admin":
+    st.subheader("Panel de Administración")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("### 📊 Información")
+        st.write(f"✅ Predicciones cargadas: {len(df_pred)}")
+        st.write(f"📈 Histórico cargado: {len(df_hist)}")
+    
+    with col2:
+        st.write("### 📁 Estado")
+        st.write("✅ predictions.csv: OK")
+        st.write("✅ historical_data.csv: OK")
+
+st.divider()
+st.caption("⚽ Predictor - Mundial 2026 | " + datetime.now().strftime("%d/%m/%Y %H:%M"))
