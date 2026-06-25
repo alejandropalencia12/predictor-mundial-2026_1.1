@@ -19,7 +19,7 @@ App web para predecir resultados del FIFA World Cup 2026 usando XGBoost y Random
 
 ## 🔗 URL
 
-https://predictor-mundial-2026.streamlit.app
+[https://predictor-mundial-2026.streamlit.app](https://predictor-mundial-2026611-dcn2brybj2xcve3l4k2wd.streamlit.app)
 
 ## 📁 Archivos
 
