@@ -1,25 +1,17 @@
 date,home_team,away_team,home_score,away_score,tournament,city,country,neutral
-2026-06-24,Mexico,Czech Republic,,,FIFA World Cup,Mexico City,Mexico,False
-2026-06-24,South Africa,South Korea,,,FIFA World Cup,Guadalupe,Mexico,True
-2026-06-24,Canada,Switzerland,,,FIFA World Cup,Vancouver,Canada,False
-2026-06-24,Bosnia and Herzegovina,Qatar,,,FIFA World Cup,Seattle,United States,True
-2026-06-24,Scotland,Brazil,,,FIFA World Cup,Miami Gardens,United States,True
-2026-06-24,Morocco,Haiti,,,FIFA World Cup,Atlanta,United States,True
-2026-06-25,United States,Turkey,,,FIFA World Cup,Inglewood,United States,False
-2026-06-25,Paraguay,Australia,,,FIFA World Cup,Santa Clara,United States,True
-2026-06-25,Curaçao,Ivory Coast,,,FIFA World Cup,Philadelphia,United States,True
-2026-06-25,Ecuador,Germany,,,FIFA World Cup,East Rutherford,United States,True
-2026-06-25,Japan,Sweden,,,FIFA World Cup,Arlington,United States,True
-2026-06-25,Tunisia,Netherlands,,,FIFA World Cup,Kansas City,United States,True
-2026-06-26,Egypt,Iran,,,FIFA World Cup,Seattle,United States,True
-2026-06-26,New Zealand,Belgium,,,FIFA World Cup,Vancouver,Canada,True
-2026-06-26,Cape Verde,Saudi Arabia,,,FIFA World Cup,Houston,United States,True
-2026-06-26,Uruguay,Spain,,,FIFA World Cup,Zapopan,Mexico,True
-2026-06-26,Norway,France,,,FIFA World Cup,Foxborough,United States,True
-2026-06-26,Senegal,Iraq,,,FIFA World Cup,Toronto,Canada,True
-2026-06-27,Algeria,Austria,,,FIFA World Cup,Kansas City,United States,True
-2026-06-27,Jordan,Argentina,,,FIFA World Cup,Arlington,United States,True
-2026-06-27,Colombia,Portugal,,,FIFA World Cup,Miami Gardens,United States,True
-2026-06-27,DR Congo,Uzbekistan,,,FIFA World Cup,Atlanta,United States,True
-2026-06-27,Panama,England,,,FIFA World Cup,East Rutherford,United States,True
-2026-06-27,Croatia,Ghana,,,FIFA World Cup,Philadelphia,United States,True
+2026-06-28,South Africa,Canada,,,FIFA World Cup,,,True
+2026-06-29,Brazil,Japan,,,FIFA World Cup,,,True
+2026-06-29,Germany,Paraguay,,,FIFA World Cup,,,True
+2026-06-29,Netherlands,Morocco,,,FIFA World Cup,,,True
+2026-06-30,Ivory Coast,Norway,,,FIFA World Cup,,,True
+2026-06-30,France,Sweden,,,FIFA World Cup,,,True
+2026-06-30,Mexico,Ecuador,,,FIFA World Cup,,,False
+2026-07-01,England,DR Congo,,,FIFA World Cup,,,True
+2026-07-01,Belgium,Senegal,,,FIFA World Cup,,,True
+2026-07-01,United States,Bosnia and Herzegovina,,,FIFA World Cup,,,False
+2026-07-02,Spain,Austria,,,FIFA World Cup,,,True
+2026-07-02,Portugal,Croatia,,,FIFA World Cup,,,True
+2026-07-02,Switzerland,Ivory Coast,,,FIFA World Cup,,,True
+2026-07-03,Australia,Egypt,,,FIFA World Cup,,,True
+2026-07-03,Argentina,Cape Verde,,,FIFA World Cup,,,True
+2026-07-03,Colombia,Ghana,,,FIFA World Cup,,,True
