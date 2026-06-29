@@ -6,7 +6,7 @@ st.title("⚽ Predictor de Resultados - Mundial 2026")
 
 with st.sidebar:
     st.header("🎯 Opciones")
-    view = st.radio("Selecciona:", ["📊 Dashboard", "🔮 Predicciones", "👥 Por Equipo", "📜 Resultados"])
+    view = st.radio("Selecciona:", ["🔮 Predicciones", "📊 Dashboard" , "👥 Por Equipo", "📜 Resultados"])
 
 try:
     df_pred = pd.read_csv('predictions.csv')
