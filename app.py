@@ -79,6 +79,18 @@ elif view == "📜 Resultados":
         st.divider()
         
         for i, row in partidos.iterrows():
+            # Validar que los scores no sean NaN
+            if pd.isna(row['home_score']) or pd.isna(row['away_score']):
+                resultado = "N/A"
+            else:
+                resultado = f"{int(row['home_score'])} - {int(row['away_score'])}"
+            
+            st.write(f"**{row['home_team']} vs {row['away_team']}**")
+            st.write(f"Resultado: **{resultado}**")
+            st.write(f"Fecha: {row['date']}")
+            st.divider()
+        
+        for i, row in partidos.iterrows():
             resultado = f"{int(row['home_score'])} - {int(row['away_score'])}"
             st.write(f"**{row['home_team']} vs {row['away_team']}**")
             st.write(f"Resultado: **{resultado}**")
