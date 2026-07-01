@@ -1,0 +1,54 @@
+name: Agregar resultado de un partido
+
+on:
+  workflow_dispatch:
+    inputs:
+      home_team:
+        description: 'Equipo local (exactamente como aparece en pending_matches.csv)'
+        required: true
+        type: string
+      away_team:
+        description: 'Equipo visitante'
+        required: true
+        type: string
+      home_score:
+        description: 'Goles del local'
+        required: true
+        type: string
+      away_score:
+        description: 'Goles del visitante'
+        required: true
+        type: string
+
+jobs:
+  agregar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias mínimas
+        run: pip install pandas
+
+      - name: Validar y agregar resultado
+        run: |
+          python agregar_resultado.py \
+            "${{ github.event.inputs.home_team }}" \
+            "${{ github.event.inputs.away_team }}" \
+            "${{ github.event.inputs.home_score }}" \
+            "${{ github.event.inputs.away_score }}"
+
+      - name: Confirmar y subir cambio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add resultados_manual.csv
+          git diff --staged --quiet && echo "Sin cambios" || git commit -m "Agregar resultado: ${{ github.event.inputs.home_team }} vs ${{ github.event.inputs.away_team }}"
+          git push

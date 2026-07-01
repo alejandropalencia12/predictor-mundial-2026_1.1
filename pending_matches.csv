@@ -1,17 +1,14 @@
 date,home_team,away_team,home_score,away_score,tournament,city,country,neutral
-2026-06-28,South Africa,Canada,,,FIFA World Cup,,,True
-2026-06-29,Brazil,Japan,,,FIFA World Cup,,,True
-2026-06-29,Germany,Paraguay,,,FIFA World Cup,,,True
-2026-06-29,Netherlands,Morocco,,,FIFA World Cup,,,True
-2026-06-30,Ivory Coast,Norway,,,FIFA World Cup,,,True
-2026-06-30,France,Sweden,,,FIFA World Cup,,,True
-2026-06-30,Mexico,Ecuador,,,FIFA World Cup,,,False
-2026-07-01,England,DR Congo,,,FIFA World Cup,,,True
-2026-07-01,Belgium,Senegal,,,FIFA World Cup,,,True
-2026-07-01,United States,Bosnia and Herzegovina,,,FIFA World Cup,,,False
-2026-07-02,Spain,Austria,,,FIFA World Cup,,,True
-2026-07-02,Portugal,Croatia,,,FIFA World Cup,,,True
-2026-07-02,Switzerland,Algeria,,,FIFA World Cup,,,True
-2026-07-03,Australia,Egypt,,,FIFA World Cup,,,True
-2026-07-03,Argentina,Cape Verde,,,FIFA World Cup,,,True
-2026-07-03,Colombia,Ghana,,,FIFA World Cup,,,True
+2026-06-30,Ivory Coast,Norway,,,FIFA World Cup,Arlington,United States,True
+2026-06-30,France,Sweden,,,FIFA World Cup,East Rutherford,United States,True
+2026-06-30,Mexico,Ecuador,,,FIFA World Cup,Mexico City,Mexico,False
+2026-07-01,England,DR Congo,,,FIFA World Cup,Atlanta,United States,True
+2026-07-01,Belgium,Senegal,,,FIFA World Cup,Seattle,United States,True
+2026-07-01,United States,Bosnia and Herzegovina,,,FIFA World Cup,Santa Clara,United States,False
+2026-07-02,Spain,Austria,,,FIFA World Cup,Inglewood,United States,True
+2026-07-02,Portugal,Croatia,,,FIFA World Cup,Toronto,Canada,True
+2026-07-02,Switzerland,Algeria,,,FIFA World Cup,Vancouver,Canada,True
+2026-07-03,Australia,Egypt,,,FIFA World Cup,Arlington,United States,True
+2026-07-03,Argentina,Cape Verde,,,FIFA World Cup,Miami Gardens,United States,True
+2026-07-03,Colombia,Ghana,,,FIFA World Cup,Kansas City,United States,True
+2026-07-04,Canada,Morocco,,,FIFA World Cup,Houston,United States,True
