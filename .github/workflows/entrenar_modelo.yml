@@ -28,8 +28,7 @@ jobs:
 
       - name: Ejecutar entrenamiento
         env:
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+          KAGGLE_JSON: ${{ secrets.KAGGLE_JSON }}
         run: python train_model.py
 
       - name: Confirmar y subir archivos actualizados
