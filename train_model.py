@@ -28,10 +28,22 @@ print("=" * 60)
 # ==========================================
 print("\n[1/9] Descargando dataset de Kaggle...")
 
-if not os.environ.get("KAGGLE_USERNAME") or not os.environ.get("KAGGLE_KEY"):
+kaggle_json_env = os.environ.get("KAGGLE_JSON")
+
+if kaggle_json_env:
+    # Formato usado en este repo: un solo secret con el JSON completo
+    os.makedirs(os.path.expanduser("~/.kaggle"), exist_ok=True)
+    with open(os.path.expanduser("~/.kaggle/kaggle.json"), "w") as f:
+        f.write(kaggle_json_env)
+    os.chmod(os.path.expanduser("~/.kaggle/kaggle.json"), 0o600)
+elif os.environ.get("KAGGLE_USERNAME") and os.environ.get("KAGGLE_KEY"):
+    # Formato alternativo: dos secrets separados (kaggle CLI los lee solo)
+    pass
+else:
     raise RuntimeError(
-        "Faltan las variables de entorno KAGGLE_USERNAME / KAGGLE_KEY. "
-        "Configúralas como GitHub Secrets en el repo (Settings > Secrets and variables > Actions)."
+        "Faltan credenciales de Kaggle. Configura el secret KAGGLE_JSON "
+        "(el archivo kaggle.json completo) o los secrets KAGGLE_USERNAME / KAGGLE_KEY "
+        "en Settings > Secrets and variables > Actions."
     )
 
 subprocess.run(
