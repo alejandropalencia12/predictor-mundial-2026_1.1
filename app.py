@@ -10,6 +10,24 @@ import os
 st.set_page_config(page_title="Predictor Mundial 2026", layout="wide", initial_sidebar_state="expanded")
 
 # ============================================================
+# DICCIONARIO DE BANDERAS DE PAÍSES
+# ============================================================
+FLAGS = {
+    'Canada': '🇨🇦', 'United States': '🇺🇸', 'Mexico': '🇲🇽', 'Panama': '🇵🇦', 'Curaçao': '🇨🇼', 'Haiti': '🇭🇹',
+    'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'Uruguay': '🇺🇾', 'Colombia': '🇨🇴', 'Ecuador': '🇪🇨', 'Paraguay': '🇵🇾',
+    'Germany': '🇩🇪', 'Austria': '🇦🇹', 'Belgium': '🇧🇪', 'Bosnia and Herzegovina': '🇧🇦', 'Croatia': '🇭🇷', 'Czech Republic': '🇨🇿',
+    'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'Spain': '🇪🇸', 'France': '🇫🇷', 'England': '🇬🇧', 'Norway': '🇳🇴', 'Netherlands': '🇳🇱',
+    'Portugal': '🇵🇹', 'Serbia': '🇷🇸', 'Switzerland': '🇨🇭', 'Turkey': '🇹🇷', 'Algeria': '🇩🇿', 'Cape Verde': '🇨🇻',
+    'Ivory Coast': '🇨🇮', 'Egypt': '🇪🇬', 'Ghana': '🇬🇭', 'Morocco': '🇲🇦', 'DR Congo': '🇨🇩',
+    'Senegal': '🇸🇳', 'South Africa': '🇿🇦', 'Tunisia': '🇹🇳', 'Saudi Arabia': '🇸🇦', 'Australia': '🇦🇺', 'South Korea': '🇰🇷',
+    'Iran': '🇮🇷', 'Japan': '🇯🇵', 'Jordan': '🇯🇴', 'Qatar': '🇶🇦', 'Uzbekistan': '🇺🇿', 'Iraq': '🇮🇶', 'New Zealand': '🇳🇿', 'Sweden': '🇸🇪'
+}
+
+def get_flag(country):
+    """Retorna la bandera del país o el nombre si no existe"""
+    return FLAGS.get(country, country)
+
+# ============================================================
 # ESTILOS PERSONALIZADOS
 # ============================================================
 st.markdown("""
@@ -21,20 +39,6 @@ st.markdown("""
         text-align: center;
         margin-bottom: 2rem;
     }
-    .metric-card {
-        background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border-left: 4px solid #1f77b4;
-    }
-    .acierto-si {
-        color: #28a745;
-        font-weight: bold;
-    }
-    .acierto-no {
-        color: #dc3545;
-        font-weight: bold;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -45,7 +49,7 @@ st.markdown('<div class="header-main">⚽ Predictor Mundial 2026</div>', unsafe_
 # ============================================================
 st.sidebar.title("📊 Navegación")
 seccion = st.sidebar.radio("Selecciona una sección:", 
-                           ["Predicciones", "Histórico", "Información"])
+                           ["Predicciones", "Últimos Partidos", "Histórico", "Información"])
 
 # ============================================================
 # SECCIÓN: INFORMACIÓN (QUÉ ES xG)
@@ -108,14 +112,6 @@ if seccion == "Información":
     **España 2.2 vs Austria 0.64**
     - España domina ofensivamente (2.2 vs 0.64)
     - Probable: España 2-0 o 3-0
-    
-    ### Cómo usarlo para apuestas
-    
-    ✅ **Compara xG Local vs xG Visita** → quién ataca mejor = probablemente gane
-    
-    ✅ **Suma xG** → si sumados son > 2.5, espera más goles (Over)
-    
-    ✅ **Mira los Top1, Top2, Top3** → son los marcadores más probables según el modelo
     """)
 
 # ============================================================
@@ -124,7 +120,6 @@ if seccion == "Información":
 elif seccion == "Predicciones":
     st.header("📅 Partidos Pendientes - Predicciones")
     
-    # Verificar que exista el archivo
     if os.path.exists('predictions.csv'):
         predictions_df = pd.read_csv('predictions.csv')
         
@@ -134,24 +129,16 @@ elif seccion == "Predicciones":
         - **Forma reciente** (últimos 5 y 10 partidos)
         - **Rankings FIFA** y valor de plantilla
         - **xG (Expected Goals)** - Fuerza de ataque
-        
-        **Cómo leer la tabla:**
-        - `Prob 1`: Probabilidad de victoria local (%)
-        - `Prob X`: Probabilidad de empate (%)
-        - `Prob 2`: Probabilidad de victoria visitante (%)
-        - `xG Local / Visita`: Goles esperados de cada equipo
-        - `Top1, Top2, Top3`: Los 3 marcadores más probables
         """)
         
-        # Mostrar tabla con formato bonito
         st.dataframe(
             predictions_df,
             column_config={
                 'Fecha': st.column_config.TextColumn("📅 Fecha", width="small"),
                 'Partido': st.column_config.TextColumn("⚽ Partido", width="medium"),
-                'Prob 1': st.column_config.NumberColumn("🏠 Local %", format="%.1f"),
-                'Prob X': st.column_config.NumberColumn("🤝 Empate %", format="%.1f"),
-                'Prob 2': st.column_config.NumberColumn("✈️ Visita %", format="%.1f"),
+                'Prob 1': st.column_config.NumberColumn("Local %", format="%.1f"),
+                'Prob X': st.column_config.NumberColumn("Empate %", format="%.1f"),
+                'Prob 2': st.column_config.NumberColumn("Visita %", format="%.1f"),
                 'xG Local': st.column_config.NumberColumn("xG Local", format="%.2f"),
                 'xG Visita': st.column_config.NumberColumn("xG Visita", format="%.2f"),
                 'Top1': st.column_config.TextColumn("🥇 Top1", width="small"),
@@ -161,15 +148,104 @@ elif seccion == "Predicciones":
             use_container_width=True,
             hide_index=True
         )
-        
-        st.info("""
-        💡 **Tip para apostar:**
-        - Si xG Local >> xG Visita → local es favorito fuerte, apunta a victoria local
-        - Si xG está balanceado → cuidado con empate (especialmente en tiempo extra)
-        - Mira Top1 primero, pero compara con Top2/Top3 para alternativas
-        """)
     else:
-        st.warning("⚠️ El archivo de predicciones aún no está disponible. Ejecuta el entrenamiento primero.")
+        st.warning("⚠️ El archivo de predicciones aún no está disponible.")
+
+# ============================================================
+# SECCIÓN: ÚLTIMOS PARTIDOS (FILTRO POR SELECCIÓN)
+# ============================================================
+elif seccion == "Últimos Partidos":
+    st.header("📊 Últimos Partidos de Cada Selección")
+    
+    if os.path.exists('historical_data.csv'):
+        historico_df = pd.read_csv('historical_data.csv')
+        historico_df['date'] = pd.to_datetime(historico_df['date'])
+        
+        # Obtener lista de equipos únicos
+        todos_equipos = sorted(
+            set(historico_df['home_team'].unique()) | set(historico_df['away_team'].unique())
+        )
+        
+        # Selector de equipo
+        equipo_seleccionado = st.selectbox(
+            "Selecciona un equipo:",
+            todos_equipos,
+            format_func=lambda x: f"{get_flag(x)} {x}"
+        )
+        
+        # Filtrar partidos del equipo
+        partidos_equipo = historico_df[
+            (historico_df['home_team'] == equipo_seleccionado) | 
+            (historico_df['away_team'] == equipo_seleccionado)
+        ].sort_values('date', ascending=False)
+        
+        if len(partidos_equipo) > 0:
+            # Selector de cantidad de partidos
+            cantidad = st.slider("Últimos partidos a mostrar:", 5, 20, 10)
+            
+            # Preparar datos para mostrar
+            ultimos_partidos = []
+            for _, row in partidos_equipo.head(cantidad).iterrows():
+                es_local = row['home_team'] == equipo_seleccionado
+                
+                if es_local:
+                    rival = row['away_team']
+                    goles_favor = int(row['home_score'])
+                    goles_contra = int(row['away_score'])
+                    resultado = "V" if goles_favor > goles_contra else ("E" if goles_favor == goles_contra else "P")
+                else:
+                    rival = row['home_team']
+                    goles_favor = int(row['away_score'])
+                    goles_contra = int(row['home_score'])
+                    resultado = "V" if goles_favor > goles_contra else ("E" if goles_favor == goles_contra else "P")
+                
+                ultimos_partidos.append({
+                    'Fecha': row['date'].strftime('%d-%m-%Y'),
+                    'Resultado': resultado,
+                    f'{equipo_seleccionado}': f"{goles_favor}",
+                    'Rival': f"{get_flag(rival)} {rival}",
+                    'Rival Goles': f"{goles_contra}",
+                    'Torneo': row['tournament']
+                })
+            
+            df_mostrar = pd.DataFrame(ultimos_partidos)
+            
+            st.dataframe(
+                df_mostrar,
+                column_config={
+                    'Fecha': st.column_config.TextColumn("📅 Fecha", width="small"),
+                    'Resultado': st.column_config.TextColumn("Res.", width="tiny"),
+                    f'{equipo_seleccionado}': st.column_config.TextColumn("Goles", width="small"),
+                    'Rival': st.column_config.TextColumn("Rival", width="medium"),
+                    'Rival Goles': st.column_config.TextColumn("Goles", width="small"),
+                    'Torneo': st.column_config.TextColumn("Torneo", width="medium"),
+                },
+                use_container_width=True,
+                hide_index=True
+            )
+            
+            # Estadísticas rápidas
+            st.markdown("---")
+            col1, col2, col3, col4 = st.columns(4)
+            
+            df_ultimos = df_mostrar.head(cantidad)
+            victorias = (df_ultimos['Resultado'] == 'V').sum()
+            empates = (df_ultimos['Resultado'] == 'E').sum()
+            derrotas = (df_ultimos['Resultado'] == 'P').sum()
+            goles_a_favor = df_ultimos[f'{equipo_seleccionado}'].astype(int).sum()
+            
+            with col1:
+                st.metric("Victorias", victorias)
+            with col2:
+                st.metric("Empates", empates)
+            with col3:
+                st.metric("Derrotas", derrotas)
+            with col4:
+                st.metric("Goles (últimos)", goles_a_favor)
+        else:
+            st.info(f"No hay datos de partidos para {equipo_seleccionado}")
+    else:
+        st.warning("⚠️ El archivo de histórico aún no está disponible.")
 
 # ============================================================
 # SECCIÓN: HISTÓRICO (RESULTADOS DE DIECISÉISAVOS EN ADELANTE)
@@ -189,15 +265,6 @@ elif seccion == "Histórico":
             - ✗ = No acertó el marcador Top1
             """)
             
-            # Formatear columna Acierto con colores
-            def color_acierto(val):
-                if val == '✓':
-                    return 'color: green; font-weight: bold'
-                elif val == '✗':
-                    return 'color: red; font-weight: bold'
-                return ''
-            
-            # Mostrar tabla
             st.dataframe(
                 historico_df,
                 column_config={
@@ -229,26 +296,22 @@ elif seccion == "Histórico":
             col1, col2, col3, col4 = st.columns(4)
             
             with col1:
-                st.metric("📈 Partidos Jugados", total, delta=None)
-            
+                st.metric("📈 Partidos Jugados", total)
             with col2:
-                st.metric("🎯 Aciertos (Top1)", aciertos, delta=f"{precision}%")
-            
+                st.metric("🎯 Aciertos (Top1)", aciertos)
             with col3:
-                st.metric("✅ Precisión", f"{precision}%", 
-                         delta="vs 33% al azar" if precision > 0 else None)
-            
+                st.metric("✅ Precisión", f"{precision}%")
             with col4:
                 if precision >= 40:
-                    st.metric("📊 Rendimiento", "Bueno ✓", delta=None)
+                    st.metric("📊 Rendimiento", "Bueno ✓")
                 elif precision >= 30:
-                    st.metric("📊 Rendimiento", "Normal", delta=None)
+                    st.metric("📊 Rendimiento", "Normal")
                 else:
-                    st.metric("📊 Rendimiento", "Por mejorar", delta=None)
+                    st.metric("📊 Rendimiento", "Por mejorar")
         else:
-            st.info("📝 No hay resultados aún. Los históricos aparecerán cuando se jueguen los partidos de dieciséisavos.")
+            st.info("📝 No hay resultados aún.")
     else:
-        st.info("📝 El histórico estará disponible cuando se terminen los dieciséisavos del torneo.")
+        st.info("📝 El histórico estará disponible cuando se terminen los dieciséisavos.")
 
 # ============================================================
 # FOOTER
