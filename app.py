@@ -225,4 +225,170 @@ elif seccion == "Últimos Partidos":
         
         # Obtener lista de equipos únicos
         todos_equipos = sorted(
-            set(historico_df
+            set(historico_df['home_team'].unique()) | set(historico_df['away_team'].unique())
+        )
+        
+        # Mostrar selector con bandera
+        col1, col2, col3 = st.columns([1, 3, 2])
+        
+        with col2:
+            equipo_seleccionado = st.selectbox(
+                "Selecciona un equipo:",
+                todos_equipos,
+                key="team_select"
+            )
+        
+        with col1:
+            flag_img = get_flag_image(equipo_seleccionado)
+            if flag_img:
+                st.image(flag_img, width=100)
+        
+        # Filtrar partidos del equipo
+        partidos_equipo = historico_df[
+            (historico_df['home_team'] == equipo_seleccionado) | 
+            (historico_df['away_team'] == equipo_seleccionado)
+        ].sort_values('date', ascending=False)
+        
+        if len(partidos_equipo) > 0:
+            # Selector de cantidad de partidos
+            cantidad = st.slider("Últimos partidos a mostrar:", 5, 20, 10)
+            
+            # Preparar datos para mostrar
+            ultimos_partidos = []
+            for _, row in partidos_equipo.head(cantidad).iterrows():
+                es_local = row['home_team'] == equipo_seleccionado
+                
+                if es_local:
+                    rival = row['away_team']
+                    goles_favor = int(row['home_score'])
+                    goles_contra = int(row['away_score'])
+                    resultado = "✅ V" if goles_favor > goles_contra else ("🤝 E" if goles_favor == goles_contra else "❌ P")
+                else:
+                    rival = row['home_team']
+                    goles_favor = int(row['away_score'])
+                    goles_contra = int(row['home_score'])
+                    resultado = "✅ V" if goles_favor > goles_contra else ("🤝 E" if goles_favor == goles_contra else "❌ P")
+                
+                ultimos_partidos.append({
+                    'Fecha': row['date'].strftime('%d-%m-%Y'),
+                    'Resultado': resultado,
+                    'Goles': f"{goles_favor}",
+                    'Rival': rival,
+                    'Rival Goles': f"{goles_contra}",
+                    'Torneo': row['tournament']
+                })
+            
+            df_mostrar = pd.DataFrame(ultimos_partidos)
+            
+            st.dataframe(
+                df_mostrar,
+                column_config={
+                    'Fecha': st.column_config.TextColumn("Fecha", width="small"),
+                    'Resultado': st.column_config.TextColumn("Res.", width="small"),
+                    'Goles': st.column_config.TextColumn("Goles", width="tiny"),
+                    'Rival': st.column_config.TextColumn("Rival", width="medium"),
+                    'Rival Goles': st.column_config.TextColumn("Goles", width="tiny"),
+                    'Torneo': st.column_config.TextColumn("Torneo", width="medium"),
+                },
+                use_container_width=True,
+                hide_index=True
+            )
+            
+            # Estadísticas rápidas
+            st.markdown("---")
+            col1, col2, col3, col4 = st.columns(4)
+            
+            victorias = (df_mostrar['Resultado'].str.contains('V')).sum()
+            empates = (df_mostrar['Resultado'].str.contains('E')).sum()
+            derrotas = (df_mostrar['Resultado'].str.contains('P')).sum()
+            goles_a_favor = df_mostrar['Goles'].astype(int).sum()
+            
+            with col1:
+                st.metric("✅ Victorias", victorias)
+            with col2:
+                st.metric("🤝 Empates", empates)
+            with col3:
+                st.metric("❌ Derrotas", derrotas)
+            with col4:
+                st.metric("⚽ Goles (últimos)", goles_a_favor)
+        else:
+            st.info(f"No hay datos de partidos para {equipo_seleccionado}")
+    else:
+        st.warning("⚠️ El archivo de histórico aún no está disponible.")
+
+# ============================================================
+# SECCIÓN: HISTÓRICO (RESULTADOS DE DIECISÉISAVOS EN ADELANTE)
+# ============================================================
+elif seccion == "Histórico":
+    st.header("🏆 Histórico - Predicciones vs Resultados (Dieciséisavos)")
+    
+    if os.path.exists('predictions_historico.csv'):
+        historico_df = pd.read_csv('predictions_historico.csv')
+        
+        if len(historico_df) > 0:
+            st.markdown("""
+            Esta tabla muestra todos los partidos jugados desde dieciséisavos en adelante,
+            con las predicciones del modelo y los resultados reales.
+            
+            - ✓ = Acertó el marcador Top1
+            - ✗ = No acertó el marcador Top1
+            """)
+            
+            st.dataframe(
+                historico_df,
+                column_config={
+                    'Fecha': st.column_config.TextColumn("Fecha", width="small"),
+                    'Partido': st.column_config.TextColumn("Partido", width="medium"),
+                    'Prob 1': st.column_config.NumberColumn("🏠 Local %", format="%.1f"),
+                    'Prob X': st.column_config.NumberColumn("Empate %", format="%.1f"),
+                    'Prob 2': st.column_config.NumberColumn("✈️ Visita %", format="%.1f"),
+                    'xG Local': st.column_config.NumberColumn("xG Local", format="%.2f"),
+                    'xG Visita': st.column_config.NumberColumn("xG Visita", format="%.2f"),
+                    'Top1': st.column_config.TextColumn("Predicción", width="small"),
+                    'Top2': st.column_config.TextColumn("Alt2", width="small"),
+                    'Top3': st.column_config.TextColumn("Alt3", width="small"),
+                    'Resultado Real': st.column_config.TextColumn("Resultado", width="small"),
+                    'Acierto': st.column_config.TextColumn("✓/✗", width="tiny"),
+                },
+                use_container_width=True,
+                hide_index=True
+            )
+            
+            # Estadísticas
+            st.markdown("---")
+            st.subheader("📊 Estadísticas del Modelo")
+            
+            aciertos = (historico_df['Acierto'] == '✓').sum()
+            total = len(historico_df)
+            precision = round(aciertos / total * 100, 1) if total > 0 else 0
+            
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("Partidos Jugados", total)
+            with col2:
+                st.metric("Aciertos (Top1)", aciertos)
+            with col3:
+                st.metric("Precisión", f"{precision}%")
+            with col4:
+                if precision >= 40:
+                    st.metric("Rendimiento", "Bueno ✓")
+                elif precision >= 30:
+                    st.metric("Rendimiento", "Normal")
+                else:
+                    st.metric("Rendimiento", "Por mejorar")
+        else:
+            st.info("📝 No hay resultados aún.")
+    else:
+        st.info("📝 El histórico estará disponible cuando se terminen los dieciséisavos.")
+
+# ============================================================
+# FOOTER
+# ============================================================
+st.markdown("---")
+st.markdown("""
+<div style='text-align: center; color: #666; font-size: 0.9rem;'>
+    <p>Predictor Mundial 2026 | Desarrollado por Alejandro Castillo Palencia</p>
+    <p>Modelos: Logistic Regression (1X2) + Random Forest (Goles esperados) + Poisson Distribution</p>
+</div>
+""", unsafe_allow_html=True)
