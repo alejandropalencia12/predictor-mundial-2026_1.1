@@ -30,4 +30,4 @@ https://predictor-mundial-202611-dcn2brybjl2xcve3l4k2wd.streamlit.app/
 
 ## 👤 Autor
 
-Alejandro Palencia
+Alejandro Castillo Palencia
