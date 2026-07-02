@@ -428,6 +428,7 @@ for _, row in pendientes.iterrows():
     filas.append({
         'Fecha': formatear_fecha(fecha), 'Partido': f"{home} vs {away}",
         'Prob 1': round(probas[2] * 100, 1), 'Prob X': round(probas[1] * 100, 1), 'Prob 2': round(probas[0] * 100, 1),
+        'xG Local': round(lambda_home, 2), 'xG Visita': round(lambda_away, 2),
         'Top1': marcadores[0], 'Top2': marcadores[1], 'Top3': marcadores[2]
     })
 
