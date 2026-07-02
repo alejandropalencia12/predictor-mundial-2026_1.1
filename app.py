@@ -1,87 +1,262 @@
+"""
+app.py - Streamlit app para Predictor Mundial 2026
+Muestra predicciones pendientes e histórico de resultados
+"""
+
 import streamlit as st
 import pandas as pd
+import os
 
-st.set_page_config(page_title="⚽ Predictor", page_icon="⚽", layout="wide")
-st.title("⚽ Predictor de Resultados - Mundial 2026")
+st.set_page_config(page_title="Predictor Mundial 2026", layout="wide", initial_sidebar_state="expanded")
 
-with st.sidebar:
-    st.header("🎯 Opciones")
-    view = st.radio("Selecciona:", ["🔮 Predicciones", "📊 Dashboard", "👥 Por Equipo", "📜 Resultados"])
+# ============================================================
+# ESTILOS PERSONALIZADOS
+# ============================================================
+st.markdown("""
+<style>
+    .header-main {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #1f77b4;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .metric-card {
+        background-color: #f0f2f6;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border-left: 4px solid #1f77b4;
+    }
+    .acierto-si {
+        color: #28a745;
+        font-weight: bold;
+    }
+    .acierto-no {
+        color: #dc3545;
+        font-weight: bold;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-try:
-    df_pred = pd.read_csv('predictions.csv')
-    df_hist = pd.read_csv('historical_data.csv')
-except Exception:
-    st.error("Error al cargar archivos")
-    st.stop()
+st.markdown('<div class="header-main">⚽ Predictor Mundial 2026</div>', unsafe_allow_html=True)
 
-if view == "📊 Dashboard":
-    st.subheader("Resumen")
-    st.metric("Total Partidos Predichos", len(df_pred))
-    st.divider()
-    st.subheader("Próximos Partidos")
-    for i, row in df_pred.head(10).iterrows():
-        st.write(f"**{row['Partido']}**")
-        st.write(f"1️⃣ {row['Prob 1']}% | ❌ {row['Prob X']}% | 2️⃣ {row['Prob 2']}%")
-        st.caption(f"Marcadores más probables: {row['Top1']} · {row['Top2']} · {row['Top3']}")
-        st.divider()
+# ============================================================
+# SIDEBAR - NAVEGACIÓN
+# ============================================================
+st.sidebar.title("📊 Navegación")
+seccion = st.sidebar.radio("Selecciona una sección:", 
+                           ["Predicciones", "Histórico", "Información"])
 
-elif view == "🔮 Predicciones":
-    st.subheader("Tabla de Predicciones")
-    st.dataframe(df_pred, use_container_width=True, height=400)
-    csv = df_pred.to_csv(index=False)
-    st.download_button("📥 Descargar", csv, "predicciones.csv", "text/csv")
+# ============================================================
+# SECCIÓN: INFORMACIÓN (QUÉ ES xG)
+# ============================================================
+if seccion == "Información":
+    st.header("📖 ¿Qué es xG (Expected Goals)?")
+    
+    st.markdown("""
+    ### Definición Simple
+    
+    **xG (Goles Esperados)** mide la **fuerza de ataque** o **capacidad de anotar goles** 
+    de un equipo basada en sus oportunidades de tiro.
+    
+    Es un número que te dice: *"¿Cuántos goles debería anotar este equipo?"*
+    
+    ### Cómo interpretarlo
+    """)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.info("""
+        **xG < 0.8**
+        
+        Equipo débil ofensivamente.
+        Probablemente anote 0-1 gol.
+        """)
+    
+    with col2:
+        st.success("""
+        **xG 0.8 - 1.5**
+        
+        Equipo con buen ataque.
+        Probablemente anote 1-2 goles.
+        """)
+    
+    with col3:
+        st.warning("""
+        **xG 1.5 - 2.5**
+        
+        Equipo muy fuerte ofensivo.
+        Probablemente anote 2-3 goles.
+        """)
+    
+    with col4:
+        st.error("""
+        **xG > 2.5**
+        
+        Equipo dominante.
+        Probablemente anote 3+ goles.
+        """)
+    
+    st.markdown("""
+    ### Ejemplos Prácticos
+    
+    **Suiza 1.41 vs Argelia 0.93**
+    - Suiza ataca mejor (1.41 > 0.93)
+    - Probable: Suiza 1-0 o 2-1
+    
+    **España 2.2 vs Austria 0.64**
+    - España domina ofensivamente (2.2 vs 0.64)
+    - Probable: España 2-0 o 3-0
+    
+    ### Cómo usarlo para apuestas
+    
+    ✅ **Compara xG Local vs xG Visita** → quién ataca mejor = probablemente gane
+    
+    ✅ **Suma xG** → si sumados son > 2.5, espera más goles (Over)
+    
+    ✅ **Mira los Top1, Top2, Top3** → son los marcadores más probables según el modelo
+    """)
 
-elif view == "👥 Por Equipo":
-    st.subheader("Predicciones por Equipo")
-
-    equipos = set()
-    for p in df_pred['Partido']:
-        e = str(p).split(' vs ')
-        if len(e) >= 2:
-            equipos.add(e[0].strip())
-            equipos.add(e[1].strip())
-
-    equipo = st.selectbox("Selecciona equipo:", sorted(list(equipos)))
-    resultado = df_pred[df_pred['Partido'].str.contains(equipo, na=False)]
-
-    st.write(f"### {equipo} - {len(resultado)} partidos predichos")
-    st.divider()
-
-    for i, row in resultado.iterrows():
-        st.write(f"**{row['Partido']}**")
-        st.write(f"1️⃣ {row['Prob 1']}% | ❌ {row['Prob X']}% | 2️⃣ {row['Prob 2']}%")
-        st.caption(f"Marcadores más probables: {row['Top1']} · {row['Top2']} · {row['Top3']}")
-        st.divider()
-
-elif view == "📜 Resultados":
-    st.subheader("Resultados de Partidos Jugados")
-
-    df_mundial = df_hist[df_hist['tournament'].str.contains('World Cup', na=False)].copy()
-
-    if len(df_mundial) == 0:
-        st.info("ℹ️ No hay resultados del Mundial disponibles aún")
+# ============================================================
+# SECCIÓN: PREDICCIONES (PARTIDOS PENDIENTES)
+# ============================================================
+elif seccion == "Predicciones":
+    st.header("📅 Partidos Pendientes - Predicciones")
+    
+    # Verificar que exista el archivo
+    if os.path.exists('predictions.csv'):
+        predictions_df = pd.read_csv('predictions.csv')
+        
+        st.markdown("""
+        Las predicciones se basan en:
+        - **ELO Rating** de cada equipo
+        - **Forma reciente** (últimos 5 y 10 partidos)
+        - **Rankings FIFA** y valor de plantilla
+        - **xG (Expected Goals)** - Fuerza de ataque
+        
+        **Cómo leer la tabla:**
+        - `Prob 1`: Probabilidad de victoria local (%)
+        - `Prob X`: Probabilidad de empate (%)
+        - `Prob 2`: Probabilidad de victoria visitante (%)
+        - `xG Local / Visita`: Goles esperados de cada equipo
+        - `Top1, Top2, Top3`: Los 3 marcadores más probables
+        """)
+        
+        # Mostrar tabla con formato bonito
+        st.dataframe(
+            predictions_df,
+            column_config={
+                'Fecha': st.column_config.TextColumn("📅 Fecha", width="small"),
+                'Partido': st.column_config.TextColumn("⚽ Partido", width="medium"),
+                'Prob 1': st.column_config.NumberColumn("🏠 Local %", format="%.1f"),
+                'Prob X': st.column_config.NumberColumn("🤝 Empate %", format="%.1f"),
+                'Prob 2': st.column_config.NumberColumn("✈️ Visita %", format="%.1f"),
+                'xG Local': st.column_config.NumberColumn("xG Local", format="%.2f"),
+                'xG Visita': st.column_config.NumberColumn("xG Visita", format="%.2f"),
+                'Top1': st.column_config.TextColumn("🥇 Top1", width="small"),
+                'Top2': st.column_config.TextColumn("🥈 Top2", width="small"),
+                'Top3': st.column_config.TextColumn("🥉 Top3", width="small"),
+            },
+            use_container_width=True,
+            hide_index=True
+        )
+        
+        st.info("""
+        💡 **Tip para apostar:**
+        - Si xG Local >> xG Visita → local es favorito fuerte, apunta a victoria local
+        - Si xG está balanceado → cuidado con empate (especialmente en tiempo extra)
+        - Mira Top1 primero, pero compara con Top2/Top3 para alternativas
+        """)
     else:
-        equipos = set(df_mundial['home_team']) | set(df_mundial['away_team'])
-        equipo = st.selectbox("Selecciona equipo:", sorted(list(equipos)))
+        st.warning("⚠️ El archivo de predicciones aún no está disponible. Ejecuta el entrenamiento primero.")
 
-        partidos = df_mundial[
-            (df_mundial['home_team'] == equipo) | (df_mundial['away_team'] == equipo)
-        ].sort_values('date', ascending=False)
+# ============================================================
+# SECCIÓN: HISTÓRICO (RESULTADOS DE DIECISÉISAVOS EN ADELANTE)
+# ============================================================
+elif seccion == "Histórico":
+    st.header("🏆 Histórico - Predicciones vs Resultados (Dieciséisavos)")
+    
+    if os.path.exists('predictions_historico.csv'):
+        historico_df = pd.read_csv('predictions_historico.csv')
+        
+        if len(historico_df) > 0:
+            st.markdown("""
+            Esta tabla muestra todos los partidos jugados desde dieciséisavos en adelante,
+            con las predicciones del modelo y los resultados reales.
+            
+            - ✓ = Acertó el marcador Top1
+            - ✗ = No acertó el marcador Top1
+            """)
+            
+            # Formatear columna Acierto con colores
+            def color_acierto(val):
+                if val == '✓':
+                    return 'color: green; font-weight: bold'
+                elif val == '✗':
+                    return 'color: red; font-weight: bold'
+                return ''
+            
+            # Mostrar tabla
+            st.dataframe(
+                historico_df,
+                column_config={
+                    'Fecha': st.column_config.TextColumn("📅 Fecha", width="small"),
+                    'Partido': st.column_config.TextColumn("⚽ Partido", width="medium"),
+                    'Prob 1': st.column_config.NumberColumn("Local %", format="%.1f"),
+                    'Prob X': st.column_config.NumberColumn("Empate %", format="%.1f"),
+                    'Prob 2': st.column_config.NumberColumn("Visita %", format="%.1f"),
+                    'xG Local': st.column_config.NumberColumn("xG Local", format="%.2f"),
+                    'xG Visita': st.column_config.NumberColumn("xG Visita", format="%.2f"),
+                    'Top1': st.column_config.TextColumn("Predicción", width="small"),
+                    'Top2': st.column_config.TextColumn("Alt2", width="small"),
+                    'Top3': st.column_config.TextColumn("Alt3", width="small"),
+                    'Resultado Real': st.column_config.TextColumn("Resultado", width="small"),
+                    'Acierto': st.column_config.TextColumn("Acierto", width="tiny"),
+                },
+                use_container_width=True,
+                hide_index=True
+            )
+            
+            # Estadísticas
+            st.markdown("---")
+            st.subheader("📊 Estadísticas del Modelo")
+            
+            aciertos = (historico_df['Acierto'] == '✓').sum()
+            total = len(historico_df)
+            precision = round(aciertos / total * 100, 1) if total > 0 else 0
+            
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("📈 Partidos Jugados", total, delta=None)
+            
+            with col2:
+                st.metric("🎯 Aciertos (Top1)", aciertos, delta=f"{precision}%")
+            
+            with col3:
+                st.metric("✅ Precisión", f"{precision}%", 
+                         delta="vs 33% al azar" if precision > 0 else None)
+            
+            with col4:
+                if precision >= 40:
+                    st.metric("📊 Rendimiento", "Bueno ✓", delta=None)
+                elif precision >= 30:
+                    st.metric("📊 Rendimiento", "Normal", delta=None)
+                else:
+                    st.metric("📊 Rendimiento", "Por mejorar", delta=None)
+        else:
+            st.info("📝 No hay resultados aún. Los históricos aparecerán cuando se jueguen los partidos de dieciséisavos.")
+    else:
+        st.info("📝 El histórico estará disponible cuando se terminen los dieciséisavos del torneo.")
 
-        st.write(f"### {equipo} - {len(partidos)} partidos jugados")
-        st.divider()
-
-        for i, row in partidos.iterrows():
-            if pd.isna(row['home_score']) or pd.isna(row['away_score']):
-                resultado = "N/A"
-            else:
-                resultado = f"{int(row['home_score'])} - {int(row['away_score'])}"
-
-            st.write(f"**{row['home_team']} vs {row['away_team']}**")
-            st.write(f"Resultado: **{resultado}**")
-            st.write(f"Fecha: {row['date']}")
-            st.divider()
-
-st.caption("⚽ Predictor - Mundial 2026 · Actualizado automáticamente vía GitHub Actions")
-st.caption("Creado por Alejandro Castillo Palencia")
+# ============================================================
+# FOOTER
+# ============================================================
+st.markdown("---")
+st.markdown("""
+<div style='text-align: center; color: #666; font-size: 0.9rem;'>
+    <p>Predictor Mundial 2026 | Desarrollado por Alejandro Castillo Palencia</p>
+    <p>Modelos: Logistic Regression (1X2) + Random Forest (Goles esperados) + Poisson Distribution</p>
+</div>
+""", unsafe_allow_html=True)
