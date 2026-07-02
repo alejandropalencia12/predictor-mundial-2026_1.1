@@ -349,15 +349,24 @@ print("\n[8/9] Generando predicciones...")
 
 HOST_ADVANTAGE = {"Mexico": 100, "United States": 100, "Canada": 100}
 
-def build_match_features(home, away, fecha=None):
+def build_match_features(home, away, fecha=None, country=None):
     if fecha is None:
         fecha = pd.Timestamp.today()
     home5 = team_stats_before_match(home, fecha, 5)
     away5 = team_stats_before_match(away, fecha, 5)
     home10 = team_stats_before_match(home, fecha, 10)
     away10 = team_stats_before_match(away, fecha, 10)
-    home_elo = elo_actual.get(home, 1500) + HOST_ADVANTAGE.get(home, 0)
-    away_elo = elo_actual.get(away, 1500) + HOST_ADVANTAGE.get(away, 0)
+
+    # El bono de anfitrión solo aplica si el partido se juega REALMENTE en el
+    # país de ese equipo. Ej: Canadá vs Marruecos en Houston -> Canadá NO
+    # recibe el bono, porque no está jugando en su propio país.
+    # Si no se especifica el país (llamadas manuales de prueba), se asume
+    # que el equipo local juega en su país, para no romper usos existentes.
+    bonus_home = HOST_ADVANTAGE.get(home, 0) if (country is None or country == home) else 0
+    bonus_away = HOST_ADVANTAGE.get(away, 0) if (country == away) else 0
+
+    home_elo = elo_actual.get(home, 1500) + bonus_home
+    away_elo = elo_actual.get(away, 1500) + bonus_away
     home_ranking = ranking_dict.get(home, 150)
     away_ranking = ranking_dict.get(away, 150)
     home_valor = valor_dict.get(home, 0)
@@ -388,8 +397,8 @@ def build_match_features(home, away, fecha=None):
     fila['drawrate10_avg'] = (fila['home_drawrate_10'] + fila['away_drawrate_10']) / 2
     return pd.DataFrame([fila])[features]
 
-def top_scores(home, away, fecha=None, max_goals=6, top_n=3):
-    x = build_match_features(home, away, fecha)
+def top_scores(home, away, fecha=None, country=None, max_goals=6, top_n=3):
+    x = build_match_features(home, away, fecha, country=country)
     lambda_home = home_goal_model.predict(x)[0]
     lambda_away = away_goal_model.predict(x)[0]
     resultados = []
@@ -409,9 +418,10 @@ def formatear_fecha(fecha):
 filas = []
 for _, row in pendientes.iterrows():
     home, away, fecha = row['home_team'], row['away_team'], row['date']
-    x = build_match_features(home, away, fecha)
+    pais_partido = row.get('country', None)
+    x = build_match_features(home, away, fecha, country=pais_partido)
     probas = modelo_oficial.predict_proba(x)[0]
-    top3, lambda_home, lambda_away = top_scores(home, away, fecha, top_n=3)
+    top3, lambda_home, lambda_away = top_scores(home, away, fecha, country=pais_partido, top_n=3)
     marcadores = top3['marcador'].tolist()
     while len(marcadores) < 3:
         marcadores.append("-")
