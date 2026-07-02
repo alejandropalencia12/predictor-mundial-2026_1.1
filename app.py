@@ -162,33 +162,23 @@ elif seccion == "Predicciones":
         3. Usa la **distribución de Poisson** para generar los **3 marcadores más probables**
         """)
         
-        # Mostrar predicciones con banderas
-        for idx, row in predictions_df.iterrows():
-            col1, col2, col3 = st.columns([0.8, 3, 0.8])
-            
-            # Extraer equipos
-            partido = row['Partido']
-            home, away = partido.split(' vs ')
-            home = home.strip()
-            away = away.strip()
-            
-            # Banderas
-            with col1:
-                flag_home = get_flag_image(home)
-                if flag_home:
-                    st.image(flag_home, width=60)
-            
-            with col2:
-                st.markdown(f"**{home} vs {away}**")
-                st.markdown(f"📅 Fecha: {row['Fecha']} | 🏠 {row['Prob 1']}% 🤝 {row['Prob X']}% ✈️ {row['Prob 2']}%")
-                st.markdown(f"⚽ xG: {row['xG Local']:.2f} - {row['xG Visita']:.2f} | 🎯 **{row['Top1']}** ({row['Top2']}, {row['Top3']})")
-            
-            with col3:
-                flag_away = get_flag_image(away)
-                if flag_away:
-                    st.image(flag_away, width=60)
-            
-            st.divider()
+        st.dataframe(
+            predictions_df,
+            column_config={
+                'Fecha': st.column_config.TextColumn("Fecha", width="small"),
+                'Partido': st.column_config.TextColumn("Partido", width="medium"),
+                'Prob 1': st.column_config.NumberColumn("🏠 Local %", format="%.1f"),
+                'Prob X': st.column_config.NumberColumn("Empate %", format="%.1f"),
+                'Prob 2': st.column_config.NumberColumn("✈️ Visita %", format="%.1f"),
+                'xG Local': st.column_config.NumberColumn("xG Local", format="%.2f"),
+                'xG Visita': st.column_config.NumberColumn("xG Visita", format="%.2f"),
+                'Top1': st.column_config.TextColumn("🥇", width="small"),
+                'Top2': st.column_config.TextColumn("🥈", width="small"),
+                'Top3': st.column_config.TextColumn("🥉", width="small"),
+            },
+            use_container_width=True,
+            hide_index=True
+        )
     else:
         st.warning("⚠️ El archivo de predicciones aún no está disponible.")
 
