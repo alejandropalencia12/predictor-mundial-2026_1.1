@@ -84,3 +84,4 @@ elif view == "📜 Resultados":
             st.divider()
 
 st.caption("⚽ Predictor - Mundial 2026 · Actualizado automáticamente vía GitHub Actions")
+st.caption("Creado por Alejandro Castillo Palencia")
