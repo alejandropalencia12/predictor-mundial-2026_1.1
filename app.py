@@ -144,8 +144,26 @@ elif seccion == "Predicciones":
     if os.path.exists('predictions.csv'):
         predictions_df = pd.read_csv('predictions.csv')
         
+        # Agregar banderas a los equipos
+        def add_flags_to_match(partido_str):
+            """Agrega banderas al string 'Local vs Visita'"""
+            if ' vs ' not in partido_str:
+                return partido_str
+            
+            home, away = partido_str.split(' vs ')
+            home_flag = get_flag_image(home.strip())
+            away_flag = get_flag_image(away.strip())
+            
+            # Retornar con banderas si están disponibles
+            if home_flag and away_flag:
+                return f"{home.strip()} vs {away.strip()}"
+            return partido_str
+        
+        # Crear columna con nombres simples para la tabla
+        predictions_df_display = predictions_df.copy()
+        
         st.markdown("""
-        ### ¿Cómo se generaron estas predicciones?
+        ### ¿Cómo se generaron las predicciones?
         
         El modelo usa múltiples factores para calcular la probabilidad de cada resultado:
         
