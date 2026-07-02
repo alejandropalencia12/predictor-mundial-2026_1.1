@@ -10,13 +10,13 @@ import os
 st.set_page_config(page_title="Predictor Mundial 2026", layout="wide", initial_sidebar_state="expanded")
 
 # ============================================================
-# DICCIONARIO DE BANDERAS DE PAÍSES
+# DICCIONARIO DE BANDERAS DE PAÍSES (SIMPLIFICADO)
 # ============================================================
 FLAGS = {
-    'Canada': '🇨🇦', 'United States': '🇺🇸', 'Mexico': '🇲🇽', 'Panama': '🇵🇦', 'Curaçao': '🇨🇼', 'Haiti': '🇭🇹',
+    'Canada': '🇨🇦', 'United States': '🇺🇸', 'Mexico': '🇲🇽', 'Panama': '🇵🇦', 'Haiti': '🇭🇹',
     'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'Uruguay': '🇺🇾', 'Colombia': '🇨🇴', 'Ecuador': '🇪🇨', 'Paraguay': '🇵🇾',
     'Germany': '🇩🇪', 'Austria': '🇦🇹', 'Belgium': '🇧🇪', 'Bosnia and Herzegovina': '🇧🇦', 'Croatia': '🇭🇷', 'Czech Republic': '🇨🇿',
-    'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'Spain': '🇪🇸', 'France': '🇫🇷', 'England': '🇬🇧', 'Norway': '🇳🇴', 'Netherlands': '🇳🇱',
+    'Spain': '🇪🇸', 'France': '🇫🇷', 'England': '🇬🇧', 'Norway': '🇳🇴', 'Netherlands': '🇳🇱',
     'Portugal': '🇵🇹', 'Serbia': '🇷🇸', 'Switzerland': '🇨🇭', 'Turkey': '🇹🇷', 'Algeria': '🇩🇿', 'Cape Verde': '🇨🇻',
     'Ivory Coast': '🇨🇮', 'Egypt': '🇪🇬', 'Ghana': '🇬🇭', 'Morocco': '🇲🇦', 'DR Congo': '🇨🇩',
     'Senegal': '🇸🇳', 'South Africa': '🇿🇦', 'Tunisia': '🇹🇳', 'Saudi Arabia': '🇸🇦', 'Australia': '🇦🇺', 'South Korea': '🇰🇷',
