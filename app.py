@@ -1,31 +1,46 @@
 """
 app.py - Streamlit app para Predictor Mundial 2026
-Muestra predicciones pendientes e histórico de resultados
+Con banderas desde FlagCDN
 """
 
 import streamlit as st
 import pandas as pd
+import requests
+from PIL import Image
+from io import BytesIO
 import os
 
 st.set_page_config(page_title="Predictor Mundial 2026", layout="wide", initial_sidebar_state="expanded")
 
 # ============================================================
-# DICCIONARIO DE BANDERAS DE PAÍSES (SIMPLIFICADO)
+# DICCIONARIO DE CÓDIGOS DE PAÍS (ISO 3166-1 alpha-2)
 # ============================================================
-FLAGS = {
-    'Canada': '🇨🇦', 'United States': '🇺🇸', 'Mexico': '🇲🇽', 'Panama': '🇵🇦', 'Haiti': '🇭🇹',
-    'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'Uruguay': '🇺🇾', 'Colombia': '🇨🇴', 'Ecuador': '🇪🇨', 'Paraguay': '🇵🇾',
-    'Germany': '🇩🇪', 'Austria': '🇦🇹', 'Belgium': '🇧🇪', 'Bosnia and Herzegovina': '🇧🇦', 'Croatia': '🇭🇷', 'Czech Republic': '🇨🇿',
-    'Spain': '🇪🇸', 'France': '🇫🇷', 'England': '🇬🇧', 'Norway': '🇳🇴', 'Netherlands': '🇳🇱',
-    'Portugal': '🇵🇹', 'Serbia': '🇷🇸', 'Switzerland': '🇨🇭', 'Turkey': '🇹🇷', 'Algeria': '🇩🇿', 'Cape Verde': '🇨🇻',
-    'Ivory Coast': '🇨🇮', 'Egypt': '🇪🇬', 'Ghana': '🇬🇭', 'Morocco': '🇲🇦', 'DR Congo': '🇨🇩',
-    'Senegal': '🇸🇳', 'South Africa': '🇿🇦', 'Tunisia': '🇹🇳', 'Saudi Arabia': '🇸🇦', 'Australia': '🇦🇺', 'South Korea': '🇰🇷',
-    'Iran': '🇮🇷', 'Japan': '🇯🇵', 'Jordan': '🇯🇴', 'Qatar': '🇶🇦', 'Uzbekistan': '🇺🇿', 'Iraq': '🇮🇶', 'New Zealand': '🇳🇿', 'Sweden': '🇸🇪'
+COUNTRY_CODES = {
+    'Canada': 'ca', 'United States': 'us', 'Mexico': 'mx', 'Panama': 'pa', 'Haiti': 'ht',
+    'Argentina': 'ar', 'Brazil': 'br', 'Uruguay': 'uy', 'Colombia': 'co', 'Ecuador': 'ec', 'Paraguay': 'py',
+    'Germany': 'de', 'Austria': 'at', 'Belgium': 'be', 'Bosnia and Herzegovina': 'ba', 'Croatia': 'hr', 'Czech Republic': 'cz',
+    'Spain': 'es', 'France': 'fr', 'England': 'gb', 'Norway': 'no', 'Netherlands': 'nl',
+    'Portugal': 'pt', 'Serbia': 'rs', 'Switzerland': 'ch', 'Turkey': 'tr', 'Algeria': 'dz', 'Cape Verde': 'cv',
+    'Ivory Coast': 'ci', 'Egypt': 'eg', 'Ghana': 'gh', 'Morocco': 'ma', 'DR Congo': 'cd',
+    'Senegal': 'sn', 'South Africa': 'za', 'Tunisia': 'tn', 'Saudi Arabia': 'sa', 'Australia': 'au', 'South Korea': 'kr',
+    'Iran': 'ir', 'Japan': 'jp', 'Jordan': 'jo', 'Qatar': 'qa', 'Uzbekistan': 'uz', 'Iraq': 'iq', 'New Zealand': 'nz', 'Sweden': 'se',
+    'Curaçao': 'cw', 'Scotland': 'gb'
 }
 
-def get_flag(country):
-    """Retorna la bandera del país o el nombre si no existe"""
-    return FLAGS.get(country, country)
+def get_flag_image(country):
+    """Obtiene la bandera de un país desde flagcdn.com"""
+    code = COUNTRY_CODES.get(country, None)
+    if not code:
+        return None
+    
+    url = f"https://flagcdn.com/w160/{code}.png"
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            return Image.open(BytesIO(response.content))
+    except:
+        pass
+    return None
 
 # ============================================================
 # ESTILOS PERSONALIZADOS
@@ -49,7 +64,13 @@ st.markdown('<div class="header-main">⚽ Predictor Mundial 2026</div>', unsafe_
 # ============================================================
 st.sidebar.title("📊 Navegación")
 seccion = st.sidebar.radio("Selecciona una sección:", 
-                           ["Predicciones", "Últimos Partidos", "Histórico", "Información"])
+                           ["🔮 Predicciones", 
+                            "⚽ Últimos Partidos", 
+                            "🏆 Histórico", 
+                            "📖 Información"])
+
+# Limpiar el prefijo del icono para usar internamente
+seccion = seccion.split(" ", 1)[1]
 
 # ============================================================
 # SECCIÓN: INFORMACIÓN (QUÉ ES xG)
@@ -124,26 +145,35 @@ elif seccion == "Predicciones":
         predictions_df = pd.read_csv('predictions.csv')
         
         st.markdown("""
-        Las predicciones se basan en:
-        - **ELO Rating** de cada equipo
-        - **Forma reciente** (últimos 5 y 10 partidos)
-        - **Rankings FIFA** y valor de plantilla
-        - **xG (Expected Goals)** - Fuerza de ataque
+        ### ¿Cómo se generaron estas predicciones?
+        
+        El modelo usa múltiples factores para calcular la probabilidad de cada resultado:
+        
+        - **ELO Rating**: Sistema de calificación dinámico basado en resultados históricos
+        - **Forma reciente**: Promedio de goles en últimos 5 y 10 partidos
+        - **Rankings FIFA**: Posición oficial de cada selección
+        - **Valor de plantilla**: Estimación de calidad de jugadores
+        - **xG (Expected Goals)**: Goles esperados según oportunidades
+        
+        Con esta información, el modelo:
+        1. Calcula la **probabilidad 1X2** (victoria local, empate, victoria visitante)
+        2. Estima los **goles esperados** de cada equipo (xG)
+        3. Usa la **distribución de Poisson** para generar los **3 marcadores más probables**
         """)
         
         st.dataframe(
             predictions_df,
             column_config={
-                'Fecha': st.column_config.TextColumn("📅 Fecha", width="small"),
-                'Partido': st.column_config.TextColumn("⚽ Partido", width="medium"),
-                'Prob 1': st.column_config.NumberColumn("Local %", format="%.1f"),
+                'Fecha': st.column_config.TextColumn("Fecha", width="small"),
+                'Partido': st.column_config.TextColumn("Partido", width="medium"),
+                'Prob 1': st.column_config.NumberColumn("🏠 Local %", format="%.1f"),
                 'Prob X': st.column_config.NumberColumn("Empate %", format="%.1f"),
-                'Prob 2': st.column_config.NumberColumn("Visita %", format="%.1f"),
+                'Prob 2': st.column_config.NumberColumn("✈️ Visita %", format="%.1f"),
                 'xG Local': st.column_config.NumberColumn("xG Local", format="%.2f"),
                 'xG Visita': st.column_config.NumberColumn("xG Visita", format="%.2f"),
-                'Top1': st.column_config.TextColumn("🥇 Top1", width="small"),
-                'Top2': st.column_config.TextColumn("🥈 Top2", width="small"),
-                'Top3': st.column_config.TextColumn("🥉 Top3", width="small"),
+                'Top1': st.column_config.TextColumn("🥇", width="small"),
+                'Top2': st.column_config.TextColumn("🥈", width="small"),
+                'Top3': st.column_config.TextColumn("🥉", width="small"),
             },
             use_container_width=True,
             hide_index=True
@@ -166,12 +196,20 @@ elif seccion == "Últimos Partidos":
             set(historico_df['home_team'].unique()) | set(historico_df['away_team'].unique())
         )
         
-        # Selector de equipo
-        equipo_seleccionado = st.selectbox(
-            "Selecciona un equipo:",
-            todos_equipos,
-            format_func=lambda x: f"{get_flag(x)} {x}"
-        )
+        # Mostrar selector con bandera
+        col1, col2, col3 = st.columns([1, 3, 2])
+        
+        with col2:
+            equipo_seleccionado = st.selectbox(
+                "Selecciona un equipo:",
+                todos_equipos,
+                key="team_select"
+            )
+        
+        with col1:
+            flag_img = get_flag_image(equipo_seleccionado)
+            if flag_img:
+                st.image(flag_img, width=100)
         
         # Filtrar partidos del equipo
         partidos_equipo = historico_df[
@@ -192,18 +230,18 @@ elif seccion == "Últimos Partidos":
                     rival = row['away_team']
                     goles_favor = int(row['home_score'])
                     goles_contra = int(row['away_score'])
-                    resultado = "V" if goles_favor > goles_contra else ("E" if goles_favor == goles_contra else "P")
+                    resultado = "✅ V" if goles_favor > goles_contra else ("🤝 E" if goles_favor == goles_contra else "❌ P")
                 else:
                     rival = row['home_team']
                     goles_favor = int(row['away_score'])
                     goles_contra = int(row['home_score'])
-                    resultado = "V" if goles_favor > goles_contra else ("E" if goles_favor == goles_contra else "P")
+                    resultado = "✅ V" if goles_favor > goles_contra else ("🤝 E" if goles_favor == goles_contra else "❌ P")
                 
                 ultimos_partidos.append({
                     'Fecha': row['date'].strftime('%d-%m-%Y'),
                     'Resultado': resultado,
-                    f'{equipo_seleccionado}': f"{goles_favor}",
-                    'Rival': f"{get_flag(rival)} {rival}",
+                    'Goles': f"{goles_favor}",
+                    'Rival': rival,
                     'Rival Goles': f"{goles_contra}",
                     'Torneo': row['tournament']
                 })
@@ -213,11 +251,11 @@ elif seccion == "Últimos Partidos":
             st.dataframe(
                 df_mostrar,
                 column_config={
-                    'Fecha': st.column_config.TextColumn("📅 Fecha", width="small"),
-                    'Resultado': st.column_config.TextColumn("Res.", width="tiny"),
-                    f'{equipo_seleccionado}': st.column_config.TextColumn("Goles", width="small"),
+                    'Fecha': st.column_config.TextColumn("Fecha", width="small"),
+                    'Resultado': st.column_config.TextColumn("Res.", width="small"),
+                    'Goles': st.column_config.TextColumn("Goles", width="tiny"),
                     'Rival': st.column_config.TextColumn("Rival", width="medium"),
-                    'Rival Goles': st.column_config.TextColumn("Goles", width="small"),
+                    'Rival Goles': st.column_config.TextColumn("Goles", width="tiny"),
                     'Torneo': st.column_config.TextColumn("Torneo", width="medium"),
                 },
                 use_container_width=True,
@@ -228,20 +266,19 @@ elif seccion == "Últimos Partidos":
             st.markdown("---")
             col1, col2, col3, col4 = st.columns(4)
             
-            df_ultimos = df_mostrar.head(cantidad)
-            victorias = (df_ultimos['Resultado'] == 'V').sum()
-            empates = (df_ultimos['Resultado'] == 'E').sum()
-            derrotas = (df_ultimos['Resultado'] == 'P').sum()
-            goles_a_favor = df_ultimos[f'{equipo_seleccionado}'].astype(int).sum()
+            victorias = (df_mostrar['Resultado'].str.contains('V')).sum()
+            empates = (df_mostrar['Resultado'].str.contains('E')).sum()
+            derrotas = (df_mostrar['Resultado'].str.contains('P')).sum()
+            goles_a_favor = df_mostrar['Goles'].astype(int).sum()
             
             with col1:
-                st.metric("Victorias", victorias)
+                st.metric("✅ Victorias", victorias)
             with col2:
-                st.metric("Empates", empates)
+                st.metric("🤝 Empates", empates)
             with col3:
-                st.metric("Derrotas", derrotas)
+                st.metric("❌ Derrotas", derrotas)
             with col4:
-                st.metric("Goles (últimos)", goles_a_favor)
+                st.metric("⚽ Goles (últimos)", goles_a_favor)
         else:
             st.info(f"No hay datos de partidos para {equipo_seleccionado}")
     else:
@@ -268,18 +305,18 @@ elif seccion == "Histórico":
             st.dataframe(
                 historico_df,
                 column_config={
-                    'Fecha': st.column_config.TextColumn("📅 Fecha", width="small"),
-                    'Partido': st.column_config.TextColumn("⚽ Partido", width="medium"),
-                    'Prob 1': st.column_config.NumberColumn("Local %", format="%.1f"),
+                    'Fecha': st.column_config.TextColumn("Fecha", width="small"),
+                    'Partido': st.column_config.TextColumn("Partido", width="medium"),
+                    'Prob 1': st.column_config.NumberColumn("🏠 Local %", format="%.1f"),
                     'Prob X': st.column_config.NumberColumn("Empate %", format="%.1f"),
-                    'Prob 2': st.column_config.NumberColumn("Visita %", format="%.1f"),
+                    'Prob 2': st.column_config.NumberColumn("✈️ Visita %", format="%.1f"),
                     'xG Local': st.column_config.NumberColumn("xG Local", format="%.2f"),
                     'xG Visita': st.column_config.NumberColumn("xG Visita", format="%.2f"),
                     'Top1': st.column_config.TextColumn("Predicción", width="small"),
                     'Top2': st.column_config.TextColumn("Alt2", width="small"),
                     'Top3': st.column_config.TextColumn("Alt3", width="small"),
                     'Resultado Real': st.column_config.TextColumn("Resultado", width="small"),
-                    'Acierto': st.column_config.TextColumn("Acierto", width="tiny"),
+                    'Acierto': st.column_config.TextColumn("✓/✗", width="tiny"),
                 },
                 use_container_width=True,
                 hide_index=True
@@ -296,18 +333,18 @@ elif seccion == "Histórico":
             col1, col2, col3, col4 = st.columns(4)
             
             with col1:
-                st.metric("📈 Partidos Jugados", total)
+                st.metric("Partidos Jugados", total)
             with col2:
-                st.metric("🎯 Aciertos (Top1)", aciertos)
+                st.metric("Aciertos (Top1)", aciertos)
             with col3:
-                st.metric("✅ Precisión", f"{precision}%")
+                st.metric("Precisión", f"{precision}%")
             with col4:
                 if precision >= 40:
-                    st.metric("📊 Rendimiento", "Bueno ✓")
+                    st.metric("Rendimiento", "Bueno ✓")
                 elif precision >= 30:
-                    st.metric("📊 Rendimiento", "Normal")
+                    st.metric("Rendimiento", "Normal")
                 else:
-                    st.metric("📊 Rendimiento", "Por mejorar")
+                    st.metric("Rendimiento", "Por mejorar")
         else:
             st.info("📝 No hay resultados aún.")
     else:
