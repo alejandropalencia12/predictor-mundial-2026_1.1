@@ -144,23 +144,52 @@ elif seccion == "Predicciones":
     if os.path.exists('predictions.csv'):
         predictions_df = pd.read_csv('predictions.csv')
         
-        # Agregar banderas a los equipos
-        def add_flags_to_match(partido_str):
-            """Agrega banderas al string 'Local vs Visita'"""
-            if ' vs ' not in partido_str:
-                return partido_str
-            
-            home, away = partido_str.split(' vs ')
-            home_flag = get_flag_image(home.strip())
-            away_flag = get_flag_image(away.strip())
-            
-            # Retornar con banderas si están disponibles
-            if home_flag and away_flag:
-                return f"{home.strip()} vs {away.strip()}"
-            return partido_str
+        st.markdown("""
+        ### ¿Cómo se generaron estas predicciones?
         
-        # Crear columna con nombres simples para la tabla
-        predictions_df_display = predictions_df.copy()
+        El modelo usa múltiples factores para calcular la probabilidad de cada resultado:
+        
+        - **ELO Rating**: Sistema de calificación dinámico basado en resultados históricos
+        - **Forma reciente**: Promedio de goles en últimos 5 y 10 partidos
+        - **Rankings FIFA**: Posición oficial de cada selección
+        - **Valor de plantilla**: Estimación de calidad de jugadores
+        - **xG (Expected Goals)**: Goles esperados según oportunidades
+        
+        Con esta información, el modelo:
+        1. Calcula la **probabilidad 1X2** (victoria local, empate, victoria visitante)
+        2. Estima los **goles esperados** de cada equipo (xG)
+        3. Usa la **distribución de Poisson** para generar los **3 marcadores más probables**
+        """)
+        
+        # Mostrar predicciones con banderas
+        for idx, row in predictions_df.iterrows():
+            col1, col2, col3 = st.columns([0.8, 3, 0.8])
+            
+            # Extraer equipos
+            partido = row['Partido']
+            home, away = partido.split(' vs ')
+            home = home.strip()
+            away = away.strip()
+            
+            # Banderas
+            with col1:
+                flag_home = get_flag_image(home)
+                if flag_home:
+                    st.image(flag_home, width=60)
+            
+            with col2:
+                st.markdown(f"**{home} vs {away}**")
+                st.markdown(f"Fecha: {row['Fecha']} | Prob: 🏠{row['Prob 1']}% 🤝{row['Prob X']}% ✈️{row['Prob 2']}%")
+                st.markdown(f"xG: {row['xG Local']:.2f} - {row['xG Visita']:.2f} | Predicción: **{row['Top1']}** ({row['Top2']}, {row['Top3']})")
+            
+            with col3:
+                flag_away = get_flag_image(away)
+                if flag_away:
+                    st.image(flag_away, width=60)
+            
+            st.divider()
+    else:
+        st.warning("⚠️ El archivo de predicciones aún no está disponible.")
         
         st.markdown("""
         ### ¿Cómo se generaron las predicciones?
