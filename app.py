@@ -63,14 +63,15 @@ st.markdown('<div class="header-main">⚽ Predictor Mundial 2026</div>', unsafe_
 # SIDEBAR - NAVEGACIÓN
 # ============================================================
 st.sidebar.title("📊 Navegación")
-seccion = st.sidebar.radio("Selecciona una sección:", 
-                           ["🔮 Predicciones", 
-                            "⚽ Últimos Partidos", 
-                            "🏆 Histórico", 
-                            "📖 Información"])
+opciones = {
+    "🔮 Predicciones": "Predicciones",
+    "⚽ Últimos Partidos": "Últimos Partidos",
+    "🏆 Histórico": "Histórico",
+    "📖 Información": "Información"
+}
 
-# Limpiar el prefijo del icono para usar internamente
-seccion = seccion.split(" ", 1)[1]
+seccion_display = st.sidebar.radio("Selecciona una sección:", list(opciones.keys()))
+seccion = opciones[seccion_display]
 
 # ============================================================
 # SECCIÓN: INFORMACIÓN (QUÉ ES xG)
@@ -179,8 +180,8 @@ elif seccion == "Predicciones":
             
             with col2:
                 st.markdown(f"**{home} vs {away}**")
-                st.markdown(f"Fecha: {row['Fecha']} | Prob: 🏠{row['Prob 1']}% 🤝{row['Prob X']}% ✈️{row['Prob 2']}%")
-                st.markdown(f"xG: {row['xG Local']:.2f} - {row['xG Visita']:.2f} | Predicción: **{row['Top1']}** ({row['Top2']}, {row['Top3']})")
+                st.markdown(f"📅 Fecha: {row['Fecha']} | 🏠 {row['Prob 1']}% 🤝 {row['Prob X']}% ✈️ {row['Prob 2']}%")
+                st.markdown(f"⚽ xG: {row['xG Local']:.2f} - {row['xG Visita']:.2f} | 🎯 **{row['Top1']}** ({row['Top2']}, {row['Top3']})")
             
             with col3:
                 flag_away = get_flag_image(away)
@@ -188,43 +189,6 @@ elif seccion == "Predicciones":
                     st.image(flag_away, width=60)
             
             st.divider()
-    else:
-        st.warning("⚠️ El archivo de predicciones aún no está disponible.")
-        
-        st.markdown("""
-        ### ¿Cómo se generaron las predicciones?
-        
-        El modelo usa múltiples factores para calcular la probabilidad de cada resultado:
-        
-        - **ELO Rating**: Sistema de calificación dinámico basado en resultados históricos
-        - **Forma reciente**: Promedio de goles en últimos 5 y 10 partidos
-        - **Rankings FIFA**: Posición oficial de cada selección
-        - **Valor de plantilla**: Estimación de calidad de jugadores
-        - **xG (Expected Goals)**: Goles esperados según oportunidades
-        
-        Con esta información, el modelo:
-        1. Calcula la **probabilidad 1X2** (victoria local, empate, victoria visitante)
-        2. Estima los **goles esperados** de cada equipo (xG)
-        3. Usa la **distribución de Poisson** para generar los **3 marcadores más probables**
-        """)
-        
-        st.dataframe(
-            predictions_df,
-            column_config={
-                'Fecha': st.column_config.TextColumn("Fecha", width="small"),
-                'Partido': st.column_config.TextColumn("Partido", width="medium"),
-                'Prob 1': st.column_config.NumberColumn("🏠 Local %", format="%.1f"),
-                'Prob X': st.column_config.NumberColumn("Empate %", format="%.1f"),
-                'Prob 2': st.column_config.NumberColumn("✈️ Visita %", format="%.1f"),
-                'xG Local': st.column_config.NumberColumn("xG Local", format="%.2f"),
-                'xG Visita': st.column_config.NumberColumn("xG Visita", format="%.2f"),
-                'Top1': st.column_config.TextColumn("🥇", width="small"),
-                'Top2': st.column_config.TextColumn("🥈", width="small"),
-                'Top3': st.column_config.TextColumn("🥉", width="small"),
-            },
-            use_container_width=True,
-            hide_index=True
-        )
     else:
         st.warning("⚠️ El archivo de predicciones aún no está disponible.")
 
