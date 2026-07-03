@@ -176,36 +176,30 @@ elif seccion == "Predicciones":
     if os.path.exists('predictions.csv'):
         predictions_df = pd.read_csv('predictions.csv')
         
-        st.markdown("""
-        ### ¿Cómo se generaron estas predicciones?
+        st.markdown("""...""")
         
-        El modelo usa múltiples factores para calcular la probabilidad de cada resultado:
-        
-        - **ELO Rating**: Sistema de calificación dinámico basado en resultados históricos
-        - **Forma reciente**: Promedio de goles en últimos 5 y 10 partidos
-        - **Rankings FIFA**: Posición oficial de cada selección
-        - **Valor de plantilla**: Estimación de calidad de jugadores
-        - **xG (Expected Goals)**: Goles esperados según oportunidades
-        
-        Con esta información, el modelo:
-        1. Calcula la **probabilidad 1X2** (victoria local, empate, victoria visitante)
-        2. Estima los **goles esperados** de cada equipo (xG)
-        3. Usa la **distribución de Poisson** para generar los **3 marcadores más probables**
-        """)
+        # Reordenar columnas en el orden deseado
+        columnas_reordenadas = [
+            'Fecha', 'Partido',
+            'Top1', 'Top2', 'Top3',
+            'Prob 1', 'Prob X', 'Prob 2',
+            'xG Local', 'xG Visita'
+        ]
+        predictions_df_display = predictions_df[columnas_reordenadas]
         
         st.dataframe(
-            predictions_df,
+            predictions_df_display,
             column_config={
                 'Fecha': st.column_config.TextColumn("Fecha", width="small"),
                 'Partido': st.column_config.TextColumn("Partido", width="medium"),
+                'Top1': st.column_config.TextColumn("🥇 Top1", width="small"),
+                'Top2': st.column_config.TextColumn("🥈 Top2", width="small"),
+                'Top3': st.column_config.TextColumn("🥉 Top3", width="small"),
                 'Prob 1': st.column_config.NumberColumn("🏠 Local %", format="%.1f"),
                 'Prob X': st.column_config.NumberColumn("Empate %", format="%.1f"),
                 'Prob 2': st.column_config.NumberColumn("✈️ Visita %", format="%.1f"),
                 'xG Local': st.column_config.NumberColumn("xG Local", format="%.2f"),
                 'xG Visita': st.column_config.NumberColumn("xG Visita", format="%.2f"),
-                'Top1': st.column_config.TextColumn("🥇", width="small"),
-                'Top2': st.column_config.TextColumn("🥈", width="small"),
-                'Top3': st.column_config.TextColumn("🥉", width="small"),
             },
             use_container_width=True,
             hide_index=True
