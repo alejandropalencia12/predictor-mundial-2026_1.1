@@ -81,6 +81,62 @@ def main():
     print(f"OK: agregado {home_team_real} {home_score_int}-{away_score_int} {away_team_real} "
           f"({str(fecha)[:10]}) a resultados_manual.csv")
 
+    # --- Guardar en predictions_historico.csv: predicción vigente + resultado real ---
+    # Esto hay que hacerlo AHORA, antes de que train_model.py recalcule
+    # predictions.csv y la predicción de este partido se pierda.
+    nombre_partido = f"{home_team_real} vs {away_team_real}"
+    resultado_real_str = f"{home_score_int}-{away_score_int}"
+
+    if os.path.exists("predictions.csv"):
+        predicciones = pd.read_csv("predictions.csv")
+        fila_pred = predicciones[predicciones['Partido'] == nombre_partido]
+    else:
+        fila_pred = pd.DataFrame()
+
+    if len(fila_pred) == 0:
+        print(f"AVISO: no se encontró una predicción previa para '{nombre_partido}' en predictions.csv. "
+              f"No se puede registrar en predictions_historico.csv (¿ya se había procesado este partido?).")
+    else:
+        p = fila_pred.iloc[0]
+
+        # Acierto 1X2: ¿el modelo predijo bien local/empate/visitante?
+        if home_score_int > away_score_int:
+            real_1x2 = '1'
+        elif home_score_int < away_score_int:
+            real_1x2 = '2'
+        else:
+            real_1x2 = 'X'
+
+        probs = {'1': p['Prob 1'], 'X': p['Prob X'], '2': p['Prob 2']}
+        pred_1x2 = max(probs, key=probs.get)
+        acierto_1x2 = '✓' if real_1x2 == pred_1x2 else '✗'
+
+        # Acierto Marcador: ¿el resultado real está en Top1, Top2 o Top3?
+        acierto_marcador = '✓' if resultado_real_str in [str(p['Top1']), str(p['Top2']), str(p['Top3'])] else '✗'
+
+        fila_historico = pd.DataFrame([{
+            'Fecha': p['Fecha'], 'Partido': nombre_partido,
+            'Prob 1': p['Prob 1'], 'Prob X': p['Prob X'], 'Prob 2': p['Prob 2'],
+            'xG Local': p.get('xG Local', ''), 'xG Visita': p.get('xG Visita', ''),
+            'Top1': p['Top1'], 'Top2': p['Top2'], 'Top3': p['Top3'],
+            'Resultado Real': resultado_real_str,
+            'Acierto 1X2': acierto_1x2, 'Acierto Marcador': acierto_marcador
+        }])
+
+        if os.path.exists("predictions_historico.csv"):
+            historico_pred = pd.read_csv("predictions_historico.csv")
+            ya_registrado = (historico_pred['Partido'] == nombre_partido).any()
+            if ya_registrado:
+                print(f"AVISO: {nombre_partido} ya estaba en predictions_historico.csv. No se duplicó.")
+                return
+            historico_pred = pd.concat([historico_pred, fila_historico], ignore_index=True)
+        else:
+            historico_pred = fila_historico
+
+        historico_pred.to_csv("predictions_historico.csv", index=False)
+        print(f"OK: {nombre_partido} agregado a predictions_historico.csv "
+              f"(1X2: {acierto_1x2}, Marcador: {acierto_marcador})")
+
 
 if __name__ == "__main__":
     main()

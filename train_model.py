@@ -24,45 +24,23 @@ print("ENTRENAMIENTO AUTOMÁTICO - PREDICTOR MUNDIAL 2026")
 print("=" * 60)
 
 # ==========================================
-# 1. DESCARGAR DATOS DESDE KAGGLE
+# 1. CARGAR HISTÓRICO Y PENDIENTES (desde el propio repo)
 # ==========================================
-print("\n[1/9] Descargando dataset de Kaggle...")
+print("\n[1/9] Cargando historico y pendientes desde el repo...")
 
-kaggle_json_env = os.environ.get("KAGGLE_JSON")
-
-if kaggle_json_env:
-    # Formato usado en este repo: un solo secret con el JSON completo
-    os.makedirs(os.path.expanduser("~/.kaggle"), exist_ok=True)
-    with open(os.path.expanduser("~/.kaggle/kaggle.json"), "w") as f:
-        f.write(kaggle_json_env)
-    os.chmod(os.path.expanduser("~/.kaggle/kaggle.json"), 0o600)
-elif os.environ.get("KAGGLE_USERNAME") and os.environ.get("KAGGLE_KEY"):
-    # Formato alternativo: dos secrets separados (kaggle CLI los lee solo)
-    pass
-else:
+if not os.path.exists("historical_data.csv") or not os.path.exists("pending_matches.csv"):
     raise RuntimeError(
-        "Faltan credenciales de Kaggle. Configura el secret KAGGLE_JSON "
-        "(el archivo kaggle.json completo) o los secrets KAGGLE_USERNAME / KAGGLE_KEY "
-        "en Settings > Secrets and variables > Actions."
+        "No se encontraron historical_data.csv / pending_matches.csv en el repo. "
+        "Este script ahora usa esos archivos como fuente de datos (ya no descarga de Kaggle)."
     )
 
-subprocess.run(
-    ["kaggle", "datasets", "download", "-d",
-     "martj42/international-football-results-from-1872-to-2017", "-p", "."],
-    check=True
-)
-subprocess.run(
-    ["unzip", "-o", "international-football-results-from-1872-to-2017.zip"],
-    check=True
-)
+historico = pd.read_csv("historical_data.csv")
+historico['date'] = pd.to_datetime(historico['date'])
 
-df = pd.read_csv("results.csv")
-df['date'] = pd.to_datetime(df['date'])
+pendientes = pd.read_csv("pending_matches.csv")
+pendientes['date'] = pd.to_datetime(pendientes['date'])
 
-historico = df[df['home_score'].notna()].copy()
-pendientes = df[df['home_score'].isna()].copy()
-
-print(f"Base Kaggle: {len(historico)} jugados, {len(pendientes)} pendientes")
+print(f"Base repo: {len(historico)} jugados, {len(pendientes)} pendientes")
 
 # ==========================================
 # 2. INCORPORAR RESULTADOS MANUALES

@@ -1,0 +1,89 @@
+Fecha,Partido,Prob 1,Prob X,Prob 2,xG Local,xG Visita,Top1,Top2,Top3,Resultado Real,Acierto 1X2,Acierto Marcador
+11-jun-26,Mexico vs South Africa,71.6,18.1,10.4,,,1-0,2-0,1-1,2-0,✓,✓
+11-jun-26,South Korea vs Czech Republic,47.4,20.6,32.0,,,1-0,1-1,2-0,2-1,✓,✗
+12-jun-26,Canada vs Bosnia and Herzegovina,58.3,22.4,19.3,,,1-0,2-0,1-1,1-1,✗,✓
+12-jun-26,United States vs Paraguay,37.2,22.4,40.4,,,1-0,1-1,2-0,4-1,✗,✗
+13-jun-26,Qatar vs Switzerland,10.8,16.9,72.3,,,0-1,0-2,1-1,1-1,✗,✓
+13-jun-26,Brazil vs Morocco,49.5,19.5,31.0,,,1-1,2-1,1-0,1-1,✗,✓
+13-jun-26,Haiti vs Scotland,23.7,21.3,55.0,,,0-1,1-1,0-0,0-1,✓,✓
+13-jun-26,Australia vs Turkey,32.9,29.8,37.3,,,1-1,0-1,1-0,2-0,✗,✗
+14-jun-26,Germany vs Curaçao,91.1,5.9,3.0,,,3-0,2-0,4-0,7-1,✓,✗
+14-jun-26,Ivory Coast vs Ecuador,19.0,22.9,58.0,,,0-1,1-1,0-0,1-0,✗,✗
+14-jun-26,Netherlands vs Japan,38.2,32.1,29.7,,,1-1,1-0,2-1,2-2,✗,✗
+14-jun-26,Sweden vs Tunisia,36.2,24.7,39.1,,,1-0,1-1,0-0,5-1,✗,✗
+15-jun-26,Belgium vs Egypt,68.9,15.8,15.4,,,1-0,1-1,2-0,1-1,✗,✓
+15-jun-26,Iran vs New Zealand,71.6,17.3,11.1,,,2-0,1-0,3-0,2-2,✗,✗
+15-jun-26,Spain vs Cape Verde,92.9,5.4,1.7,,,3-0,2-0,4-0,0-0,✗,✗
+15-jun-26,Saudi Arabia vs Uruguay,14.6,20.4,65.1,,,0-1,1-1,0-2,1-1,✗,✓
+16-jun-26,France vs Senegal,68.7,17.1,14.2,,,2-0,1-0,2-1,3-1,✓,✗
+16-jun-26,Iraq vs Norway,20.8,23.3,55.9,,,0-1,1-1,0-0,1-4,✓,✗
+16-jun-26,Argentina vs Algeria,73.1,16.2,10.7,,,2-0,1-0,2-1,3-0,✓,✗
+16-jun-26,Austria vs Jordan,77.1,12.0,10.9,,,2-0,2-1,1-0,3-1,✓,✗
+17-jun-26,Portugal vs DR Congo,82.4,11.9,5.7,,,2-0,1-0,3-0,1-1,✗,✗
+17-jun-26,Uzbekistan vs Colombia,16.4,21.3,62.3,,,0-1,0-2,1-1,3-1,✗,✗
+17-jun-26,England vs Croatia,64.2,20.4,15.4,,,1-1,1-0,2-1,4-2,✓,✗
+17-jun-26,Ghana vs Panama,21.0,18.6,60.4,,,0-1,1-1,0-0,1-0,✗,✗
+18-jun-26,Czech Republic vs South Africa,55.6,20.6,23.7,,,1-0,2-0,1-1,1-1,✗,✓
+18-jun-26,Mexico vs South Korea,71.5,19.6,8.9,,,2-1,1-1,2-0,1-0,✓,✗
+18-jun-26,Switzerland vs Bosnia and Herzegovina,65.9,18.0,16.1,,,1-0,2-0,1-1,4-1,✓,✗
+18-jun-26,Canada vs Qatar,80.5,14.6,4.9,,,2-0,1-0,3-0,6-0,✓,✗
+19-jun-26,Scotland vs Morocco,19.4,20.0,60.7,,,0-1,0-2,1-1,0-1,✓,✓
+19-jun-26,Brazil vs Haiti,85.5,9.6,4.8,,,2-0,3-0,4-0,3-0,✓,✓
+19-jun-26,United States vs Australia,61.2,20.8,18.0,,,1-1,2-1,1-0,2-0,✓,✗
+19-jun-26,Turkey vs Paraguay,52.1,24.0,23.9,,,1-0,1-1,2-0,0-1,✗,✗
+20-jun-26,Germany vs Ivory Coast,72.6,14.5,13.0,,,2-0,1-0,2-1,2-1,✓,✓
+20-jun-26,Ecuador vs Curaçao,90.0,6.9,3.1,,,3-0,2-0,4-0,0-0,✗,✗
+20-jun-26,Netherlands vs Sweden,67.2,17.8,15.0,,,2-0,2-1,1-0,5-1,✓,✗
+20-jun-26,Tunisia vs Japan,9.8,22.6,67.6,,,0-1,1-1,0-2,0-4,✓,✗
+21-jun-26,Belgium vs Iran,54.5,17.9,27.6,,,1-0,1-1,2-0,0-0,✗,✗
+21-jun-26,New Zealand vs Egypt,15.4,22.8,61.8,,,0-1,1-1,0-0,1-3,✓,✗
+21-jun-26,Spain vs Saudi Arabia,90.3,7.4,2.4,,,3-0,2-0,4-0,4-0,✓,✓
+21-jun-26,Uruguay vs Cape Verde,75.9,14.5,9.5,,,2-0,1-0,3-0,2-2,✗,✗
+22-jun-26,France vs Iraq,79.3,14.0,6.7,,,2-0,1-0,2-1,3-0,✓,✗
+22-jun-26,Norway vs Senegal,52.2,20.0,27.8,,,1-1,1-0,0-1,3-2,✓,✗
+22-jun-26,Argentina vs Austria,73.3,17.1,9.6,,,2-0,3-0,2-1,2-0,✓,✓
+22-jun-26,Jordan vs Algeria,16.5,17.0,66.4,,,0-1,1-1,0-2,1-2,✓,✗
+23-jun-26,Portugal vs Uzbekistan,73.1,14.6,12.2,,,2-0,1-0,3-0,5-0,✓,✗
+23-jun-26,Colombia vs DR Congo,79.8,13.4,6.8,,,2-0,1-0,2-1,1-0,✓,✓
+23-jun-26,England vs Ghana,89.8,7.6,2.6,,,3-0,2-0,4-0,0-0,✗,✗
+23-jun-26,Panama vs Croatia,19.8,18.4,61.7,,,0-1,1-1,0-2,0-1,✓,✓
+24-jun-26,Mexico vs Czech Republic,79.1,13.9,7.0,,,2-0,3-0,1-0,3-0,✓,✓
+24-jun-26,South Africa vs South Korea,18.5,27.9,53.6,,,0-1,1-1,0-0,1-0,✗,✗
+24-jun-26,Canada vs Switzerland,56.9,23.4,19.7,,,1-0,1-1,2-0,0-1,✗,✗
+24-jun-26,Bosnia and Herzegovina vs Qatar,46.7,22.3,30.9,,,1-1,1-0,0-1,3-1,✓,✗
+24-jun-26,Scotland vs Brazil,10.5,18.0,71.5,,,0-1,0-2,1-1,0-3,✓,✗
+24-jun-26,Morocco vs Haiti,85.5,9.9,4.6,,,2-0,1-0,3-0,4-2,✓,✗
+25-jun-26,United States vs Turkey,68.9,18.9,12.2,,,2-1,1-1,2-0,2-3,✗,✗
+25-jun-26,Paraguay vs Australia,29.4,25.8,44.8,,,0-1,1-1,0-0,0-0,✗,✓
+25-jun-26,Curaçao vs Ivory Coast,7.9,14.5,77.6,,,0-3,1-3,0-2,0-2,✓,✓
+25-jun-26,Ecuador vs Germany,28.6,25.6,45.8,,,1-1,0-1,1-2,2-1,✗,✗
+25-jun-26,Japan vs Sweden,68.5,17.4,14.1,,,2-0,2-1,1-0,1-1,✗,✗
+25-jun-26,Tunisia vs Netherlands,6.1,13.1,80.8,,,0-1,0-2,1-1,1-3,✓,✗
+26-jun-26,Egypt vs Iran,26.2,25.1,48.8,,,1-1,0-1,1-0,1-1,✗,✓
+26-jun-26,New Zealand vs Belgium,4.1,12.1,83.7,,,0-1,0-2,1-1,1-5,✓,✗
+26-jun-26,Cape Verde vs Saudi Arabia,34.4,24.7,40.9,,,1-1,0-1,1-0,0-0,✗,✗
+26-jun-26,Uruguay vs Spain,10.6,20.1,69.3,,,0-1,1-1,0-2,0-1,✓,✓
+26-jun-26,Norway vs France,18.8,20.3,60.9,,,0-1,1-1,0-2,1-4,✓,✗
+26-jun-26,Senegal vs Iraq,60.5,19.6,19.9,,,1-0,1-1,2-0,5-0,✓,✗
+27-jun-26,Algeria vs Austria,42.3,26.6,31.2,,,1-1,1-0,2-1,3-3,✗,✗
+27-jun-26,Jordan vs Argentina,2.7,9.9,87.5,,,0-2,0-1,0-3,1-3,✓,✗
+27-jun-26,Colombia vs Portugal,30.0,27.5,42.5,,,1-1,1-0,2-1,0-0,✗,✗
+27-jun-26,DR Congo vs Uzbekistan,32.5,25.5,42.0,,,1-1,2-1,1-0,3-1,✗,✗
+27-jun-26,Panama vs England,8.1,16.0,75.9,,,0-1,1-1,0-2,0-2,✓,✓
+27-jun-26,Croatia vs Ghana,71.6,17.8,10.6,,,2-0,1-0,2-1,2-1,✓,✓
+28-jun-26,South Africa vs Canada,17.8,22.7,59.5,,,0-1,1-1,0-0,0-1,✓,✓
+29-jun-26,Brazil vs Japan,50.2,23.2,26.5,,,1-0,1-1,2-0,2-1,✓,✗
+29-jun-26,Germany vs Paraguay,68.1,16.9,15.0,,,1-0,2-0,1-1,1-1,✗,✓
+29-jun-26,Netherlands vs Morocco,40.9,22.4,36.6,,,1-1,1-0,2-1,1-1,✗,✓
+30-jun-26,Ivory Coast vs Norway,35.7,23.9,40.4,,,1-1,0-1,1-0,1-2,✓,✗
+30-jun-26,France vs Sweden,78.9,11.9,9.2,,,2-0,3-0,1-0,3-0,✓,✓
+30-jun-26,Mexico vs Ecuador,64.0,23.3,12.7,,,1-0,2-0,1-1,2-0,✓,✓
+1-jul-26,England vs DR Congo,79.3,13.8,6.9,,,2-0,1-0,3-0,2-1,✓,✗
+1-jul-26,Belgium vs Senegal,67.1,15.1,17.8,,,2-0,1-0,2-1,3-2,✓,✗
+1-jul-26,United States vs Bosnia and Herzegovina,84.0,10.3,5.7,,,2-0,1-0,2-1,2-0,✓,✓
+2-jul-26,Spain vs Austria,72.5,17.7,9.8,,,2-0,1-0,3-0,3-0,✓,✓
+2-jul-26,Portugal vs Croatia,60.0,22.8,17.2,,,1-1,1-0,2-1,2-1,✓,✓
+2-jul-26,Switzerland vs Algeria,44.6,22.0,33.4,,,1-0,1-1,2-0,2-0,✓,✓
+3-jul-26,Australia vs Egypt,42.7,27.3,30.0,,,1-0,1-1,0-0,1-1,✗,✓
+3-jul-26,Argentina vs Cape Verde,88.5,8.7,2.7,,,3-0,2-0,4-0,3-2,✓,✗
+3-jul-26,Colombia vs Ghana,79.0,15.6,5.4,,,2-0,1-0,3-0,1-0,✓,✓

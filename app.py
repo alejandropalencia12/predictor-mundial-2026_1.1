@@ -1,6 +1,5 @@
 """
 app.py - Streamlit app para Predictor Mundial 2026
-Con autenticación por contraseña
 """
 
 import streamlit as st
@@ -11,37 +10,6 @@ from io import BytesIO
 import os
 
 st.set_page_config(page_title="Predictor Mundial 2026", layout="wide", initial_sidebar_state="expanded")
-
-# ============================================================
-# AUTENTICACIÓN (CONTRASEÑA)
-# ============================================================
-def check_password():
-    """Returns True si el usuario ingresa la contraseña correcta."""
-    if "password_correct" not in st.session_state:
-        st.session_state.password_correct = False
-
-    if not st.session_state.password_correct:
-        st.markdown("""
-        <div style='text-align: center; margin-top: 5rem;'>
-            <h1>🔐 Predictor Mundial 2026</h1>
-            <h3>Acceso Restringido</h3>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        password = st.text_input("🔑 Ingresa la contraseña:", type="password", placeholder="Contraseña")
-        
-        if password:
-            if password == "mundial2026":  # ← CAMBIA ESTO A TU CONTRASEÑA
-                st.session_state.password_correct = True
-                st.rerun()
-            else:
-                st.error("❌ Contraseña incorrecta. Intenta de nuevo.")
-        return False
-    return True
-
-# Verificar contraseña antes de mostrar la app
-if not check_password():
-    st.stop()
 
 # ============================================================
 # DICCIONARIO DE CÓDIGOS DE PAÍS (ISO 3166-1 alpha-2)
@@ -63,13 +31,13 @@ def get_flag_image(country):
     code = COUNTRY_CODES.get(country, None)
     if not code:
         return None
-    
+
     url = f"https://flagcdn.com/w160/{code}.png"
     try:
         response = requests.get(url, timeout=5)
         if response.status_code == 200:
             return Image.open(BytesIO(response.content))
-    except:
+    except Exception:
         pass
     return None
 
@@ -109,59 +77,59 @@ seccion = opciones[seccion_display]
 # ============================================================
 if seccion == "Información":
     st.header("📖 ¿Qué es xG (Expected Goals)?")
-    
+
     st.markdown("""
     ### Definición Simple
-    
-    **xG (Goles Esperados)** mide la **fuerza de ataque** o **capacidad de anotar goles** 
+
+    **xG (Goles Esperados)** mide la **fuerza de ataque** o **capacidad de anotar goles**
     de un equipo basada en sus oportunidades de tiro.
-    
+
     Es un número que te dice: *"¿Cuántos goles debería anotar este equipo?"*
-    
+
     ### Cómo interpretarlo
     """)
-    
+
     col1, col2, col3, col4 = st.columns(4)
-    
+
     with col1:
         st.info("""
         **xG < 0.8**
-        
+
         Equipo débil ofensivamente.
         Probablemente anote 0-1 gol.
         """)
-    
+
     with col2:
         st.success("""
         **xG 0.8 - 1.5**
-        
+
         Equipo con buen ataque.
         Probablemente anote 1-2 goles.
         """)
-    
+
     with col3:
         st.warning("""
         **xG 1.5 - 2.5**
-        
+
         Equipo muy fuerte ofensivo.
         Probablemente anote 2-3 goles.
         """)
-    
+
     with col4:
         st.error("""
         **xG > 2.5**
-        
+
         Equipo dominante.
         Probablemente anote 3+ goles.
         """)
-    
+
     st.markdown("""
     ### Ejemplos Prácticos
-    
+
     **Suiza 1.41 vs Argelia 0.93**
     - Suiza ataca mejor (1.41 > 0.93)
     - Probable: Suiza 1-0 o 2-1
-    
+
     **España 2.2 vs Austria 0.64**
     - España domina ofensivamente (2.2 vs 0.64)
     - Probable: España 2-0 o 3-0
@@ -172,13 +140,10 @@ if seccion == "Información":
 # ============================================================
 elif seccion == "Predicciones":
     st.header("📅 Partidos Pendientes - Predicciones")
-    
+
     if os.path.exists('predictions.csv'):
         predictions_df = pd.read_csv('predictions.csv')
-        
-        st.markdown("""...""")
-        
-        # Reordenar columnas en el orden deseado
+
         columnas_reordenadas = [
             'Fecha', 'Partido',
             'Top1', 'Top2', 'Top3',
@@ -186,7 +151,7 @@ elif seccion == "Predicciones":
             'xG Local', 'xG Visita'
         ]
         predictions_df_display = predictions_df[columnas_reordenadas]
-        
+
         st.dataframe(
             predictions_df_display,
             column_config={
@@ -212,46 +177,41 @@ elif seccion == "Predicciones":
 # ============================================================
 elif seccion == "Últimos Partidos":
     st.header("📊 Últimos Partidos de Cada Selección")
-    
+
     if os.path.exists('historical_data.csv'):
         historico_df = pd.read_csv('historical_data.csv')
         historico_df['date'] = pd.to_datetime(historico_df['date'])
-        
-        # Obtener lista de equipos únicos
+
         todos_equipos = sorted(
             set(historico_df['home_team'].unique()) | set(historico_df['away_team'].unique())
         )
-        
-        # Mostrar selector con bandera
+
         col1, col2, col3 = st.columns([1, 3, 2])
-        
+
         with col2:
             equipo_seleccionado = st.selectbox(
                 "Selecciona un equipo:",
                 todos_equipos,
                 key="team_select"
             )
-        
+
         with col1:
             flag_img = get_flag_image(equipo_seleccionado)
             if flag_img:
                 st.image(flag_img, width=100)
-        
-        # Filtrar partidos del equipo
+
         partidos_equipo = historico_df[
-            (historico_df['home_team'] == equipo_seleccionado) | 
+            (historico_df['home_team'] == equipo_seleccionado) |
             (historico_df['away_team'] == equipo_seleccionado)
         ].sort_values('date', ascending=False)
-        
+
         if len(partidos_equipo) > 0:
-            # Selector de cantidad de partidos
             cantidad = st.slider("Últimos partidos a mostrar:", 5, 20, 10)
-            
-            # Preparar datos para mostrar
+
             ultimos_partidos = []
             for _, row in partidos_equipo.head(cantidad).iterrows():
                 es_local = row['home_team'] == equipo_seleccionado
-                
+
                 if es_local:
                     rival = row['away_team']
                     goles_favor = int(row['home_score'])
@@ -262,7 +222,7 @@ elif seccion == "Últimos Partidos":
                     goles_favor = int(row['away_score'])
                     goles_contra = int(row['home_score'])
                     resultado = "✅ V" if goles_favor > goles_contra else ("🤝 E" if goles_favor == goles_contra else "❌ P")
-                
+
                 ultimos_partidos.append({
                     'Fecha': row['date'].strftime('%d-%m-%Y'),
                     'Resultado': resultado,
@@ -271,9 +231,9 @@ elif seccion == "Últimos Partidos":
                     'Rival Goles': f"{goles_contra}",
                     'Torneo': row['tournament']
                 })
-            
+
             df_mostrar = pd.DataFrame(ultimos_partidos)
-            
+
             st.dataframe(
                 df_mostrar,
                 column_config={
@@ -287,16 +247,15 @@ elif seccion == "Últimos Partidos":
                 use_container_width=True,
                 hide_index=True
             )
-            
-            # Estadísticas rápidas
+
             st.markdown("---")
             col1, col2, col3, col4 = st.columns(4)
-            
+
             victorias = (df_mostrar['Resultado'].str.contains('V')).sum()
             empates = (df_mostrar['Resultado'].str.contains('E')).sum()
             derrotas = (df_mostrar['Resultado'].str.contains('P')).sum()
             goles_a_favor = df_mostrar['Goles'].astype(int).sum()
-            
+
             with col1:
                 st.metric("✅ Victorias", victorias)
             with col2:
@@ -311,23 +270,23 @@ elif seccion == "Últimos Partidos":
         st.warning("⚠️ El archivo de histórico aún no está disponible.")
 
 # ============================================================
-# SECCIÓN: HISTÓRICO (RESULTADOS DE DIECISÉISAVOS EN ADELANTE)
+# SECCIÓN: HISTÓRICO (PREDICCIONES VS RESULTADOS REALES)
 # ============================================================
 elif seccion == "Histórico":
-    st.header("🏆 Histórico - Predicciones vs Resultados (Dieciséisavos)")
-    
+    st.header("🏆 Histórico - Predicciones vs Resultados")
+
     if os.path.exists('predictions_historico.csv'):
         historico_df = pd.read_csv('predictions_historico.csv')
-        
+
         if len(historico_df) > 0:
             st.markdown("""
-            Esta tabla muestra todos los partidos jugados desde dieciséisavos en adelante,
-            con las predicciones del modelo y los resultados reales.
-            
-            - ✓ = Acertó el marcador Top1
-            - ✗ = No acertó el marcador Top1
+            Esta tabla muestra todos los partidos ya jugados, con las predicciones
+            del modelo y los resultados reales.
+
+            - **Acierto 1X2**: ✓ si el modelo predijo bien si ganaba el local, empataba, o ganaba el visitante
+            - **Acierto Marcador**: ✓ si el resultado real está entre los 3 marcadores más probables (Top1, Top2 o Top3)
             """)
-            
+
             st.dataframe(
                 historico_df,
                 column_config={
@@ -342,39 +301,34 @@ elif seccion == "Histórico":
                     'Top2': st.column_config.TextColumn("Alt2", width="small"),
                     'Top3': st.column_config.TextColumn("Alt3", width="small"),
                     'Resultado Real': st.column_config.TextColumn("Resultado", width="small"),
-                    'Acierto': st.column_config.TextColumn("✓/✗", width="tiny"),
+                    'Acierto 1X2': st.column_config.TextColumn("1X2", width="small"),
+                    'Acierto Marcador': st.column_config.TextColumn("Marcador", width="small"),
                 },
                 use_container_width=True,
                 hide_index=True
             )
-            
-            # Estadísticas
+
             st.markdown("---")
             st.subheader("📊 Estadísticas del Modelo")
-            
-            aciertos = (historico_df['Acierto'] == '✓').sum()
+
             total = len(historico_df)
-            precision = round(aciertos / total * 100, 1) if total > 0 else 0
-            
-            col1, col2, col3, col4 = st.columns(4)
-            
+            aciertos_1x2 = (historico_df['Acierto 1X2'] == '✓').sum()
+            aciertos_marcador = (historico_df['Acierto Marcador'] == '✓').sum()
+            precision_1x2 = round(aciertos_1x2 / total * 100, 1) if total > 0 else 0
+            precision_marcador = round(aciertos_marcador / total * 100, 1) if total > 0 else 0
+
+            col1, col2, col3 = st.columns(3)
+
             with col1:
                 st.metric("Partidos Jugados", total)
             with col2:
-                st.metric("Aciertos (Top1)", aciertos)
+                st.metric("Acierto 1X2", f"{aciertos_1x2}/{total} ({precision_1x2}%)")
             with col3:
-                st.metric("Precisión", f"{precision}%")
-            with col4:
-                if precision >= 40:
-                    st.metric("Rendimiento", "Bueno ✓")
-                elif precision >= 30:
-                    st.metric("Rendimiento", "Normal")
-                else:
-                    st.metric("Rendimiento", "Por mejorar")
+                st.metric("Acierto Marcador (Top1-3)", f"{aciertos_marcador}/{total} ({precision_marcador}%)")
         else:
             st.info("📝 No hay resultados aún.")
     else:
-        st.info("📝 El histórico estará disponible cuando se terminen los dieciséisavos.")
+        st.info("📝 El histórico estará disponible cuando se jueguen los primeros partidos.")
 
 # ============================================================
 # FOOTER
