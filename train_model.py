@@ -325,7 +325,7 @@ print("Modelos entrenados con", len(dataset_xgb), "partidos")
 # ==========================================
 print("\n[8/9] Generando predicciones...")
 
-HOST_ADVANTAGE = {"Mexico": 100, "United States": 100, "Canada": 100}
+HOST_ADVANTAGE = {"Mexico": 50, "United States": 50, "Canada": 50}
 
 def build_match_features(home, away, fecha=None, country=None):
     if fecha is None:
