@@ -1,0 +1,59 @@
+name: Agregar partido nuevo (fixture)
+
+on:
+  workflow_dispatch:
+    inputs:
+      home_team:
+        description: 'Equipo local'
+        required: true
+        type: string
+      away_team:
+        description: 'Equipo visitante'
+        required: true
+        type: string
+      fecha:
+        description: 'Fecha del partido (AAAA-MM-DD, ej. 2026-07-11)'
+        required: true
+        type: string
+      country:
+        description: 'País donde se juega (dejar vacío si es en el país del local)'
+        required: false
+        type: string
+      tournament:
+        description: 'Torneo (por defecto: FIFA World Cup)'
+        required: false
+        type: string
+
+jobs:
+  agregar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v6
+
+      - name: Configurar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias mínimas
+        run: pip install pandas
+
+      - name: Agregar partido
+        run: |
+          python agregar_partido.py \
+            "${{ github.event.inputs.home_team }}" \
+            "${{ github.event.inputs.away_team }}" \
+            "${{ github.event.inputs.fecha }}" \
+            "${{ github.event.inputs.country }}" \
+            "${{ github.event.inputs.tournament }}"
+
+      - name: Confirmar y subir cambio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add partidos_manual.csv
+          git diff --staged --quiet && echo "Sin cambios" || git commit -m "Agregar partido: ${{ github.event.inputs.home_team }} vs ${{ github.event.inputs.away_team }}"
+          git push
