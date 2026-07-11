@@ -7,7 +7,8 @@ on:
   workflow_dispatch: {}  # también permite dispararlo manualmente desde la pestaña Actions
   push:
     paths:
-      - 'resultados_manual.csv'  # si editas resultados a mano, corre de inmediato
+      - 'resultados_manual.csv'   # si editas resultados a mano, corre de inmediato
+      - 'partidos_manual.csv'     # igual si agregas un partido/fixture nuevo
 
 jobs:
   entrenar:
