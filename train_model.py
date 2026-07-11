@@ -98,6 +98,45 @@ else:
 historico_ml = historico[historico['date'] >= '2020-01-01'].copy()
 
 # ==========================================
+# 2b. INCORPORAR PARTIDOS NUEVOS (fixtures que Kaggle ya no actualiza)
+# ==========================================
+print("\n[2b/9] Incorporando partidos_manual.csv...")
+
+RUTA_PARTIDOS_MANUAL = "partidos_manual.csv"
+
+if os.path.exists(RUTA_PARTIDOS_MANUAL):
+    partidos_nuevos_df = pd.read_csv(RUTA_PARTIDOS_MANUAL)
+else:
+    partidos_nuevos_df = pd.DataFrame(columns=['fecha', 'home_team', 'away_team', 'tournament', 'country', 'neutral'])
+
+if len(partidos_nuevos_df) > 0:
+    partidos_nuevos_df['date'] = pd.to_datetime(partidos_nuevos_df['fecha'])
+
+    ya_en_pendientes = set(zip(pendientes['date'], pendientes['home_team'], pendientes['away_team']))
+    ya_en_historico = set(zip(historico['date'], historico['home_team'], historico['away_team']))
+
+    filas_nuevas = []
+    for _, row in partidos_nuevos_df.iterrows():
+        key = (row['date'], row['home_team'], row['away_team'])
+        if key in ya_en_pendientes or key in ya_en_historico:
+            continue  # ya estaba, no duplicar
+        filas_nuevas.append({
+            'date': row['date'], 'home_team': row['home_team'], 'away_team': row['away_team'],
+            'home_score': None, 'away_score': None,
+            'tournament': row.get('tournament', 'FIFA World Cup'),
+            'city': None, 'country': row.get('country', None),
+            'neutral': row.get('neutral', True)
+        })
+
+    if filas_nuevas:
+        pendientes = pd.concat([pendientes, pd.DataFrame(filas_nuevas)], ignore_index=True).sort_values('date').reset_index(drop=True)
+        print(f"{len(filas_nuevas)} partido(s) nuevo(s) agregado(s) a pendientes")
+    else:
+        print("Los partidos en partidos_manual.csv ya estaban incorporados")
+else:
+    print("No hay partidos manuales nuevos que incorporar")
+
+# ==========================================
 # 3. ELO HISTÓRICO
 # ==========================================
 print("\n[3/9] Calculando ELO...")
@@ -325,7 +364,7 @@ print("Modelos entrenados con", len(dataset_xgb), "partidos")
 # ==========================================
 print("\n[8/9] Generando predicciones...")
 
-HOST_ADVANTAGE = {"Mexico": 50, "United States": 50, "Canada": 50}
+HOST_ADVANTAGE = {"Mexico": 100, "United States": 100, "Canada": 100}
 
 def build_match_features(home, away, fecha=None, country=None):
     if fecha is None:
